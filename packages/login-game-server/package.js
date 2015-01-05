@@ -10,7 +10,8 @@ Package.onUse(function(api) {
   api.use(['accounts-password', 'coffeescript'], ['client', 'server']);
   api.use(['ddp', 'urlz'], ['server']);
   api.export('AetherUplink', 'server');
-  api.addFiles('server/aether-uplink.coffee', 'server');
+  api.export('createAccountCopy', 'server'); // hack
+  api.addFiles(['server/aether-uplink.coffee', 'server/game-server-accounts.coffee'], 'server');
 });
 
 Package.onTest(function(api) {
