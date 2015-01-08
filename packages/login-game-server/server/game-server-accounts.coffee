@@ -15,7 +15,7 @@ Meteor.methods
       console.log 'creating new user:', userLoginInfo.username, remoteUserId
       localUserId = Accounts.createUser
         username: userLoginInfo.username
-        password: token
+        password: userLoginInfo.password
       Meteor.users.update localUserId, $set:{masterUserId:remoteUserId}
     else
       console.log 'user exists already:', userLoginInfo.username
@@ -23,6 +23,6 @@ Meteor.methods
         # the username on the master server has changed. update local
         Meteor.users.update user._id, {username: userLoginInfo.username}
       # server side .setPassword is undocumented: http://goo.gl/fdVGRk
-      Accounts.setPassword(user._id, token)
+      Accounts.setPassword(user._id, userLoginInfo.password)
 
     return
