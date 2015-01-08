@@ -1,23 +1,28 @@
 Meteor.methods
 
-  # userId is the id of the user account on the Master server
   createAccount: (remoteUserId)->
     check remoteUserId, String
-    token = AetherUplink.connection.call 'getPassword', AetherUplink.name, remoteUserId
-    if not token
+    userLoginInfo = AetherUplink.connection.call 'getUserLoginInfo', AetherUplink.name, remoteUserId
+    if not userLoginInfo
       throw new Meteor.Error 'failed to get token from master server for userId: ' + remoteUserId
 
-    console.log 'received token from', AetherUplink.url
-    user = Meteor.users.findOne {remoteUserId: remoteUserId}
+    if remoteUserId != userLoginInfo._id # hopefully this is superfluous
+      throw new Meteor.Error 'Master server returned the wrong user'
+
+    console.log 'received user info For:', userLoginInfo.username, 'From:', AetherUplink.url
+    user = Meteor.users.findOne {masterUserId: remoteUserId}
     if not user
-      console.log 'creating new user:', remoteUserId
+      console.log 'creating new user:', userLoginInfo.username, remoteUserId
       localUserId = Accounts.createUser
-        username: remoteUserId
+        username: userLoginInfo.username
         password: token
-      Meteor.users.update localUserId, $set:{remoteUserId:remoteUserId}
+      Meteor.users.update localUserId, $set:{masterUserId:remoteUserId}
     else
-      # undocumented: http://goo.gl/fdVGRk
-      console.log 'user exists already:', remoteUserId
+      console.log 'user exists already:', userLoginInfo.username
+      if user.username != userLoginInfo.username
+        # the username on the master server has changed. update local
+        Meteor.users.update user._id, {username: userLoginInfo.username}
+      # server side .setPassword is undocumented: http://goo.gl/fdVGRk
       Accounts.setPassword(user._id, token)
 
     return

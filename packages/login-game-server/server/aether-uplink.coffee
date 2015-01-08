@@ -15,9 +15,9 @@ When we start this Game Server, we instantiate a Login object
 with our url
 
 ###
-serverNamePattern = /^[a-z][a-z0-9\-_ ]{1,126}[a-z0-9]$/
+serverNamePattern = /^[a-z][a-z0-9\-_ ]{1,62}[a-z0-9]$/
 serverNameDescription = "Server name must begin and end with a 
-  letter, be 128 characters or less, and contain only lower 
+  letter, be 64 characters or less, and contain only lower 
   case letters, numbers, dash, space, and underscore characters"
 
 class Uplink
