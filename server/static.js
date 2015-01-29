@@ -65,10 +65,13 @@ staticServerContent = function(){
     callback(null, chunk);
   });
 
-  Meteor.call('addCharacter', 'main', {
-    name: 'jill',
-    tx: 0,
-    ty: 0
-  });
+  c = Characters.findOne();
+  if (!c) {
+    Characters.add({
+      name: 'jill',
+      cx: 1,
+      cy: 1
+    });
+  }
 
 }

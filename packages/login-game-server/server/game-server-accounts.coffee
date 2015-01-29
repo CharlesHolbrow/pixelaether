@@ -1,5 +1,6 @@
 Meteor.methods
-
+  # Danger! this method should not pass errors from the master server back to the client.
+  # Instead, errors should be logged here, and sent back to the client as generic errors
   createAccount: (remoteUserId)->
     check remoteUserId, String
     userLoginInfo = AetherUplink.connection.call 'getUserLoginInfo', AetherUplink.name, remoteUserId
