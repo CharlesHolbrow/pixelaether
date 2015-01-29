@@ -11,13 +11,13 @@ Meteor.methods
       throw new Meteor.Error 'Master server returned the wrong user'
 
     console.log 'received user info For:', userLoginInfo.username, 'From:', AetherUplink.url
-    user = Meteor.users.findOne {masterUserId: remoteUserId}
+    user = Meteor.users.findOne remoteUserId
     if not user
       console.log 'creating new user:', userLoginInfo.username, remoteUserId
-      localUserId = Accounts.createUser
+      Accounts.createUser
+        id: remoteUserId
         username: userLoginInfo.username
         password: userLoginInfo.password
-      Meteor.users.update localUserId, $set:{masterUserId:remoteUserId}
     else
       console.log 'user exists already:', userLoginInfo.username
       if user.username != userLoginInfo.username
