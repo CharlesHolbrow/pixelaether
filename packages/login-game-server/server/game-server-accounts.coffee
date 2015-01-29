@@ -27,3 +27,9 @@ Meteor.methods
       Accounts.setPassword(user._id, userLoginInfo.password)
 
     return
+
+  isLoggedIn: ->
+    if @userId
+      return true
+    else
+      return false
