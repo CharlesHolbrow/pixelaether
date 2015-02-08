@@ -1,7 +1,7 @@
 Meteor.methods
   # The Client calls this method when she wants to login, but does not have a password
-  # for this server. Tell the master server to create a password for that user, and push
-  # that password to the user.
+  # Ask the master server to send us that user's password a password for that user. That
+  # Password will be pushed to the user, if she doesn't already have it.
   createAccount: (remoteUserId)->
     check remoteUserId, String
     # get user info from the master server
