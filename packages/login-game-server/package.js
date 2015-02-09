@@ -8,9 +8,8 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.0.2.1');
   api.use(['accounts-password', 'coffeescript'], ['client', 'server']);
-  api.use(['ddp', 'urlz', 'check'], ['server']);
-  api.export('AetherUplink', 'server');
-  api.export('createAccountCopy', 'server'); // hack
+  api.use(['ddp', 'urlz', 'check', 'mongo'], 'server');
+  api.export(['AetherUplink', 'GameServers'], 'server');
   api.addFiles([
     'server/aether-uplink.coffee',
     'server/game-server-accounts.coffee',

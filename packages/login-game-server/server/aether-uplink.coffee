@@ -20,11 +20,19 @@ serverNameDescription = "Server name must begin and end with a
   letter, be 64 characters or less, and contain only lower 
   case letters, numbers, dash, space, and underscore characters"
 
+GameServers = new Mongo.Collection 'game_servers'
+GameServers._ensureIndex {name:1}, {unique: true}
+GameServers._ensureIndex {url:1}, {unique: true}
+GameServers.localId = ()->
+  server = @findOne {url:urlz.clean Meteor.absoluteUrl()}
+  return server?._id
+
 class Uplink
   constructor: (url, name)->
     @url = null
     @connection = null
     @name = null
+    @localUrl = urlz.clean Meteor.absoluteUrl()
     name and @setServerName name
     url and @connect url
 
@@ -32,6 +40,7 @@ class Uplink
     if @connection then @connection.disconnect()
     @url = urlz.clean(url)
     @connection = DDP.connect(@url)
+
 
   login: (email, password)->
     @connection.call 'login',
@@ -48,8 +57,16 @@ class Uplink
     @name = serverName
 
   createGameServer: ->
-    # will fail if we haven't set the name and connection
-    @connection.call 'createGameServer', @name, Meteor.absoluteUrl()
+    unless @name
+      throw new Meteor.Error 'Must call .setServerName before .createGameServer'
+    # Ensure that we are registered with the master server
+    @connection.call 'createGameServer', @name, Meteor.absoluteUrl(), (err, serverId)=>
+      if err then throw err
+      # Ensure our server exists in the local db
+      @connection.call 'getGameServerInfo', {_id:serverId, url:@localUrl}, (err, serverInfo)=>
+        if err then throw err
+        # Upsert by url because this is how GameServers.localId() searches
+        GameServers.upsert {url:@localUrl}, serverInfo
 
 # This will be our connection to the main server
 # The game server must .connect to www.pixelaether.com
