@@ -11,7 +11,7 @@ try {
 }
 
 Deps.autorun(function(){
-  console.log('AetherUplink status:', AetherUplink.connection.status());
+  console.log('AetherUplink status:', AetherUplink.connection.status().status);
 });
 
 staticServerContent();

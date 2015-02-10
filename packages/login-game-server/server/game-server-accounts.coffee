@@ -16,19 +16,82 @@ Meteor.methods
     user = Meteor.users.findOne remoteUserId
     if not user
       console.log 'Creating new user:', userLoginInfo.username, remoteUserId
-      Accounts.createUser
-        id: remoteUserId
-        username: userLoginInfo.username
-        password: userLoginInfo.password
-    else
-      console.log 'User exists already:', userLoginInfo.username
-      if user.username != userLoginInfo.username
-        # the username on the master server has changed. update local
-        Meteor.users.update user._id, {username: userLoginInfo.username}
-      # server side .setPassword is undocumented: http://goo.gl/fdVGRk
-      Accounts.setPassword(user._id, userLoginInfo.password)
+      createLocalUser remoteUserId
+    # finally, ensure that the user has the resume token provided by the server
+    Accounts.ensureLoginToken(remoteUserId, userLoginInfo.password)
+    # We haven't yet done anything with the username.
 
-    return
 
   isLoggedIn: ->
     !!@userId
+
+# Assuming token is an un-hashed string
+# Look token up in the users collection, and make sure that it
+# is still valid (it hasn't expired)
+Accounts.isTokenValid = (token)->
+  hash = Accounts._hashLoginToken token
+  user = Meteor.users.findOne(
+    {'services.resume.loginTokens.hashedToken': hash})
+
+  return false unless user
+
+  return not _(user.services.resume.loginTokens).find (val)->
+    expiration = Accounts._tokenExpiration val.when
+    val.hashedToken == hash and new Date() >= expiration
+
+# If the user has the token already, do nothing.
+# Else, add the token to the user
+Accounts.ensureLoginToken = (userId, token)->
+  user = Meteor.users.findOne(userId)
+  if not user
+    throw new Meteor.Error 'That user does not exist'
+
+  stampedToken = {token: token, when: (new Date)}
+  hashedStampedToken = Accounts._hashStampedToken stampedToken
+  hash = hashedStampedToken.hashedToken
+
+  # Make sure a different user doesn't already have this token
+  otherUser = Meteor.users.findOne
+    _id: {$ne: userId}
+    'services.resume.loginTokens.hashedToken': hash
+  if otherUser
+    throw 'Illegal Token'
+
+  # Make sure the user doesn't already have this token
+  userWithToken = Meteor.users.findOne
+    _id:userId,
+    'services.resume.loginTokens.hashedToken': hash
+  if userWithToken
+    return
+
+  Accounts._insertHashedLoginToken userId, hashedStampedToken
+  return
+
+createLocalUser = (userId)->
+  Accounts.createUser
+    id:userId
+    username: Random.id()
+
+
+# We will create all our accounts on the server
+# We don't want users on the client to be able to choose their
+# own ID
+Accounts.config {forbidClientAccountCreation: true}
+
+# options argument comes from Accounts.createUser method
+Accounts.onCreateUser (options, user)->
+  console.log 'create user options:', options
+  console.log 'create user:        ', user
+
+  if options.profile
+    user.profile = options.profile
+  if options.id and typeof options.id == 'string'
+    user._id = options.id
+
+  return user
+
+Accounts.validateLoginAttempt (attemptInfo)->
+  if attemptInfo.allowed then return true
+  # We generate this custom error, to tell the client to call
+  # the createAccount method
+  throw new Meteor.Error 'CALL CREATE ACCOUNT'

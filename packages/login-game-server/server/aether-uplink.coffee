@@ -20,13 +20,6 @@ serverNameDescription = "Server name must begin and end with a
   letter, be 64 characters or less, and contain only lower 
   case letters, numbers, dash, space, and underscore characters"
 
-GameServers = new Mongo.Collection 'game_servers'
-GameServers._ensureIndex {name:1}, {unique: true}
-GameServers._ensureIndex {url:1}, {unique: true}
-GameServers.localId = ()->
-  server = @findOne {url:urlz.clean Meteor.absoluteUrl()}
-  return server?._id
-
 class Uplink
   constructor: (url, name)->
     @url = null
