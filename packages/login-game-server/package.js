@@ -13,8 +13,6 @@ Package.onUse(function(api) {
   api.addFiles([
     'server/aether-uplink.coffee',
     'server/game-server-accounts.coffee',
-    'server/on-create-user.coffee',
-    'server/validate-login-attempt.coffee',
     ], 'server');
 });
 
