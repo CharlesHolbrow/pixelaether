@@ -1,6 +1,6 @@
 Meteor.methods
-  # The Client calls this method when she wants to login, but does not have a password
-  # Ask the master server to send us that user's password a password for that user. That
+  # The Client calls this method when she wants to login, but does not have a token
+  # Ask the master server to send us that user's token a token for our server. That
   # Password will be pushed to the user, if she doesn't already have it.
   createAccount: (remoteUserId)->
     check remoteUserId, String
@@ -15,12 +15,12 @@ Meteor.methods
     console.log 'Received user info for:', userLoginInfo.username, 'from:', AetherUplink.url
     user = Meteor.users.findOne remoteUserId
     if not user
-      console.log 'Creating new user:', userLoginInfo.username, remoteUserId
+      console.log 'Creating new user:', remoteUserId
       createLocalUser remoteUserId
     # finally, ensure that the user has the resume token provided by the server
-    Accounts.ensureLoginToken(remoteUserId, userLoginInfo.password)
+    Accounts.ensureLoginToken(remoteUserId, userLoginInfo.token)
     # We haven't yet done anything with the username.
-
+    # Additionally, we need to think about how the master server (or this server) will update passwords
 
   isLoggedIn: ->
     !!@userId
