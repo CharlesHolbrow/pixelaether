@@ -56,8 +56,9 @@ class Uplink
     serverId = @connection.call 'createGameServer', @name, Meteor.absoluteUrl()
     # Ensure our server exists in the local db
     serverInfo = @connection.call 'getGameServerInfo', {_id:serverId, url:@localUrl}
-    # Upsert by url because this is how GameServers.localId() searches
-    GameServers.upsert {url:@localUrl}, serverInfo
+    # set by url because this is how GameServers.localId() searches
+    GameServers.remove {url:@localUrl}
+    GameServers.insert serverInfo
 
 # This will be our connection to the main server
 # The game server must .connect to www.pixelaether.com

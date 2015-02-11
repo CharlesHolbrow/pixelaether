@@ -78,9 +78,7 @@ Accounts.ensureUserName = (userId, username)->
     {$set:{username:newName}})
   if numberChanged
     console.log 'Renamed old user to:', newName
-  numberChanged = Meteor.users.update userId, {$set:{username:username}}
-  if numberChanged
-    console.log 'Updated username:', username
+  Meteor.users.update userId, {$set:{username:username}}
 
 
 # Assuming token is an un-hashed string
@@ -88,9 +86,7 @@ Accounts.ensureUserName = (userId, username)->
 # is still valid (it hasn't expired)
 isTokenValid = (token)->
   hash = Accounts._hashLoginToken token
-  user = Meteor.users.findOne(
-    {'services.resume.loginTokens.hashedToken': hash})
-
+  user = Meteor.users.findOne {'services.resume.loginTokens.hashedToken': hash}
   return false unless user
 
   return not _(user.services.resume.loginTokens).find (val)->
