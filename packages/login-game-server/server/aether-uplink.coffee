@@ -53,13 +53,11 @@ class Uplink
     unless @name
       throw new Meteor.Error 'Must call .setServerName before .createGameServer'
     # Ensure that we are registered with the master server
-    @connection.call 'createGameServer', @name, Meteor.absoluteUrl(), (err, serverId)=>
-      if err then throw err
-      # Ensure our server exists in the local db
-      @connection.call 'getGameServerInfo', {_id:serverId, url:@localUrl}, (err, serverInfo)=>
-        if err then throw err
-        # Upsert by url because this is how GameServers.localId() searches
-        GameServers.upsert {url:@localUrl}, serverInfo
+    serverId = @connection.call 'createGameServer', @name, Meteor.absoluteUrl()
+    # Ensure our server exists in the local db
+    serverInfo = @connection.call 'getGameServerInfo', {_id:serverId, url:@localUrl}
+    # Upsert by url because this is how GameServers.localId() searches
+    GameServers.upsert {url:@localUrl}, serverInfo
 
 # This will be our connection to the main server
 # The game server must .connect to www.pixelaether.com

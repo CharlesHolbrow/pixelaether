@@ -1,4 +1,5 @@
 Meteor.methods
+
   # The Client calls this method when she wants to login, but does not have a token
   # Ask the master server to send us that user's token a token for our server. That
   # Password will be pushed to the user, if she doesn't already have it.
@@ -12,32 +13,23 @@ Meteor.methods
     if remoteUserId != userLoginInfo._id # hopefully this is superfluous
       throw new Meteor.Error 'Master server returned the wrong user'
 
-    console.log 'Received user info for:', userLoginInfo.username, 'from:', AetherUplink.url
-    user = Meteor.users.findOne remoteUserId
+    username = userLoginInfo.username
+    id = userLoginInfo._id
+
+    Accounts.ensureUserName id, username
+    user = Meteor.users.findOne id
     if not user
-      console.log 'Creating new user:', remoteUserId
-      createLocalUser remoteUserId
+      console.log 'Creating new user:', username, remoteUserId
+      Accounts.createUser {id:id, username:username}
+
     # finally, ensure that the user has the resume token provided by the server
     Accounts.ensureLoginToken(remoteUserId, userLoginInfo.token)
-    # We haven't yet done anything with the username.
-    # Additionally, we need to think about how the master server (or this server) will update passwords
 
+
+  # Helper method. Only used for testing
   isLoggedIn: ->
     !!@userId
 
-# Assuming token is an un-hashed string
-# Look token up in the users collection, and make sure that it
-# is still valid (it hasn't expired)
-Accounts.isTokenValid = (token)->
-  hash = Accounts._hashLoginToken token
-  user = Meteor.users.findOne(
-    {'services.resume.loginTokens.hashedToken': hash})
-
-  return false unless user
-
-  return not _(user.services.resume.loginTokens).find (val)->
-    expiration = Accounts._tokenExpiration val.when
-    val.hashedToken == hash and new Date() >= expiration
 
 # If the user has the token already, do nothing.
 # Else, add the token to the user
@@ -67,10 +59,43 @@ Accounts.ensureLoginToken = (userId, token)->
   Accounts._insertHashedLoginToken userId, hashedStampedToken
   return
 
-createLocalUser = (userId)->
-  Accounts.createUser
-    id:userId
-    username: Random.id()
+
+# Make sure that a username is available for a user account
+#
+# Usernames are a unique field in the database. We want
+# our master server to have priority when naming users. If
+# We can find a user that has the specified username,
+# rename her, so we can give this user the name proscribed by
+# the master server.
+#
+# If the user with userId exists, update their username field.
+Accounts.ensureUserName = (userId, username)->
+  check userId, String
+  check username, String
+  newName = username + '_' + Random.id()
+  numberChanged = Meteor.users.update(
+    {_id:{$ne:userId}, username:username},
+    {$set:{username:newName}})
+  if numberChanged
+    console.log 'Renamed old user to:', newName
+  numberChanged = Meteor.users.update userId, {$set:{username:username}}
+  if numberChanged
+    console.log 'Updated username:', username
+
+
+# Assuming token is an un-hashed string
+# Look token up in the users collection, and make sure that it
+# is still valid (it hasn't expired)
+isTokenValid = (token)->
+  hash = Accounts._hashLoginToken token
+  user = Meteor.users.findOne(
+    {'services.resume.loginTokens.hashedToken': hash})
+
+  return false unless user
+
+  return not _(user.services.resume.loginTokens).find (val)->
+    expiration = Accounts._tokenExpiration val.when
+    val.hashedToken == hash and new Date() >= expiration
 
 
 # We will create all our accounts on the server
@@ -80,14 +105,10 @@ Accounts.config {forbidClientAccountCreation: true}
 
 # options argument comes from Accounts.createUser method
 Accounts.onCreateUser (options, user)->
-  console.log 'create user options:', options
-  console.log 'create user:        ', user
-
   if options.profile
     user.profile = options.profile
   if options.id and typeof options.id == 'string'
     user._id = options.id
-
   return user
 
 Accounts.validateLoginAttempt (attemptInfo)->
