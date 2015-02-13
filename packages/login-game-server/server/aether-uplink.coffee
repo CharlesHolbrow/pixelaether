@@ -58,6 +58,7 @@ class Uplink
       @name,
       Meteor.absoluteUrl()
     # Ensure our server exists in the local db
+    GameServers.remove {name:@name, _id:{$ne:serverInfo._id}}
     GameServers.upsert serverInfo._id,  serverInfo
 
 # This will be our connection to the main server
