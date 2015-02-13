@@ -6,7 +6,9 @@ Meteor.methods
   createAccount: (remoteUserId)->
     check remoteUserId, String
     # get user info from the master server
-    userLoginInfo = AetherUplink.connection.call 'getUserLoginInfo', AetherUplink.name, remoteUserId
+    userLoginInfo = AetherUplink.connection.call(
+      'getUserLoginInfo', GameServers.localId(), remoteUserId)
+
     if not userLoginInfo
       throw new Meteor.Error 'failed to get token from master server for userId: ' + remoteUserId
 
