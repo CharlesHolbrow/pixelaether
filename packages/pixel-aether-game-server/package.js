@@ -3,6 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api){
+  api.use(['coffeescript', 'urlz', 'login-game-server', 'tracker']);
   api.imply([
     'accounts-password',
     'maps-server',
@@ -10,4 +11,5 @@ Package.onUse(function(api){
     'tilesets-server',
     'login-game-server'
   ], 'server');
+  api.addFiles(['launch.coffee'], 'server')
 });

@@ -15,19 +15,28 @@ When we start this Game Server, we instantiate a Login object
 with our url
 
 ###
-serverNamePattern = /^[a-z][a-z0-9\-_ ]{1,62}[a-z0-9]$/
-serverNameDescription = "Server name must begin and end with a 
-  letter, be 64 characters or less, and contain only lower 
-  case letters, numbers, dash, space, and underscore characters"
+
+serverNamePattern = /^[a-z][a-z0-9\-_ ]{1,62}[a-z0-9](DEV)?$/
+serverNameDescription = """
+  Invalid SERVER_NAME in pixel.json
+
+  SERVER_NAME must begin and end with a letter, be 64
+  characters or less, and contain only lower case letters,
+  numbers, dash, space, and underscore characters.
+  """
 
 class Uplink
-  constructor: (url, name)->
+  constructor: (url)->
     @url = null
     @connection = null
     @name = null
     @localUrl = urlz.clean Meteor.absoluteUrl()
-    name and @setServerName name
     url and @connect url
+
+    servername = GameServers.localName()
+    unless servername and serverNamePattern.test(servername)
+      throw new Meteor.Error serverNameDescription + ': ' + servername
+    @name = servername
 
   connect: (url)->
     if @connection then @connection.disconnect()
@@ -44,14 +53,7 @@ class Uplink
           console.log 'Uplink Login Error:', err
           throw err
 
-  setServerName: (serverName)->
-    unless serverNamePattern.test(serverName)
-      throw new Meteor.Error serverNameDescription + ': ' + serverName
-    @name = serverName
-
   createGameServer: ->
-    unless @name
-      throw new Meteor.Error 'Must call .setServerName before .createGameServer'
     # Ensure that we are registered with the master server
     serverInfo = @connection.call 'updateGameServer',
       GameServers.localId(),
