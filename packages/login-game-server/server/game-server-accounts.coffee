@@ -1,8 +1,10 @@
 Meteor.methods
 
-  # The Client calls this method when she wants to login, but does not have a token
-  # Ask the master server to send us that user's token a token for our server. That
-  # Password will be pushed to the user, if she doesn't already have it.
+  # The Client calls this method when she wants to login, but
+  # does not have a working token. Ask the master server to
+  # send us that user's token a token for our server. That
+  # Password will be pushed to the user, if she doesn't already
+  # have it.
   createAccount: (remoteUserId)->
     check remoteUserId, String
     # get user info from the master server
@@ -24,7 +26,8 @@ Meteor.methods
       console.log 'Creating new user:', username, remoteUserId
       Accounts.createUser {id:id, username:username}
 
-    # finally, ensure that the user has the resume token provided by the server
+    # Finally, ensure that the user has the resume token
+    # provided by the server
     Accounts.ensureLoginToken(remoteUserId, userLoginInfo.token)
 
 
@@ -88,7 +91,8 @@ Accounts.ensureUserName = (userId, username)->
 # is still valid (it hasn't expired)
 isTokenValid = (token)->
   hash = Accounts._hashLoginToken token
-  user = Meteor.users.findOne {'services.resume.loginTokens.hashedToken': hash}
+  user = Meteor.users.findOne(
+    {'services.resume.loginTokens.hashedToken': hash})
   return false unless user
 
   return not _(user.services.resume.loginTokens).find (val)->
