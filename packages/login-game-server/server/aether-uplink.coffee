@@ -41,17 +41,13 @@ class Uplink
   connect: (url)->
     if @connection then @connection.disconnect()
     @url = urlz.clean(url)
-    @connection = DDP.connect(@url)
-
+    @connection = Rift.connection @url
 
   login: (email, password)->
-    @connection.call 'login',
-      password: password
-      user: {email: email}
-      (err, res)->
-        if err
-          console.log 'Uplink Login Error:', err
-          throw err
+    DDP.loginWithPassword @connection, {email:email}, password, (err)->
+      if err
+        console.log 'Uplink Login Error:', err
+        throw err
 
   createGameServer: ->
     # Ensure that we are registered with the master server
@@ -60,8 +56,8 @@ class Uplink
       @name,
       Meteor.absoluteUrl()
     # Ensure our server exists in the local db
-    GameServers.remove {name:@name, _id:{$ne:serverInfo._id}}
-    GameServers.upsert serverInfo._id,  serverInfo
+    # GameServers.remove {name:@name, _id:{$ne:serverInfo._id}}
+    # GameServers.upsert serverInfo._id,  serverInfo
 
 # This will be our connection to the main server
 # The game server must .connect to www.pixelaether.com

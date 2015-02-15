@@ -7,8 +7,22 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0.2.1');
+  api.imply('game-servers', 'server');
   api.use(['accounts-password', 'coffeescript'], ['client', 'server']);
-  api.use(['underscore', 'ddp', 'urlz', 'check', 'mongo', 'random', 'game-servers'], 'server');
+  api.use(
+    [
+      'underscore',
+      'ddp',
+      'urlz',
+      'check',
+      'mongo',
+      'random',
+      'game-servers',
+      'rift',
+      'ongoworks:ddp-login@0.2.0'
+    ],
+    'server'
+  );
   api.export(['AetherUplink', 'GameServers'], 'server');
   api.addFiles([
     'server/aether-uplink.coffee',

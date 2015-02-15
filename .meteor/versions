@@ -43,6 +43,7 @@ mobile-status-bar@1.0.2
 mongo@1.0.11
 npm-bcrypt@0.7.7
 observe-sequence@1.0.4
+ongoworks:ddp-login@0.2.0
 ordered-dict@1.0.2
 pixel-aether-game-server@0.0.0
 polyfills@0.0.0
@@ -51,6 +52,7 @@ reactive-dict@1.0.5
 reactive-var@1.0.4
 reload@1.1.2
 retry@1.0.2
+rift@0.0.0
 routepolicy@1.0.4
 service-configuration@1.0.3
 session@1.0.5
