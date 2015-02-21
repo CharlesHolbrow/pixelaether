@@ -1,14 +1,6 @@
 # Pixel Aether Game Server
 
-You need a [pixelaether.com](http://www.pixelaether.com) account to run your own pixel server.
-
-- When you run meteor for the first time, it will autogenerate pixel.json in the root of your project dir
-- Open up pixel.json, and add your login credentials using your pixelaether.com account
-- Choose a name for your game server, and add it to `pixel.json`. Server names must be
-  - All lower case
-  - Begin with a letter
-  - Contain only letters, numbers, underscore, dash, and space characters
-  - Less then 65 characters long
+First, create a [pixelaether.com](http://www.pixelaether.com) account. You will need you email and password to proceed.
 
 ```sh
 # With meteor installed:
@@ -21,6 +13,14 @@ $ meteor --settings pixel.json
 # 1. Add your pixelaether.com login credentials to pixel.json
 # 2. Choose a name for your server, and add it to pixel.json
 ```
+
+- When you run meteor for the first time, it will autogenerate pixel.json in the root of your project dir
+- Open up pixel.json, and add your login credentials using your pixelaether.com account
+- Choose a name for your game server, and add it to `pixel.json`. Server names must be
+  - All lower case
+  - Begin with a letter
+  - Contain only letters, numbers, underscore, dash, and space characters
+  - Less then 65 characters long
 
 
 ## Deploy to meteor.com
