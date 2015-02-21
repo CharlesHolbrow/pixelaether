@@ -1,0 +1,1 @@
+TilesetDDS = new DDS('tileset', TilesetClass);
