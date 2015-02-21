@@ -15,8 +15,9 @@ You need a [pixelaether.com](http://www.pixelaether.com) run your own pixel serv
 $ git clone git@github.com:CharlesHolbrow/PixelAetherGameServer.git
 $ cd PixelAetherGameServer
 $ meteor --settings pixel.json
+# pixel.json will be auto-generated. You will see an warning message
 
-# Pixel.json will now be generated. You need to
+# To proceed:
 # 1. Add your pixelaether.com login credentials to pixel.json
 # 2. Choose a name for your server, and add it to pixel.json
 ```
@@ -26,4 +27,3 @@ $ meteor --settings pixel.json
 ```sh
 $ meteor deploy yourname.meteor.com --settings pixel.json
 ```
-
