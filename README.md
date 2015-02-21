@@ -1,6 +1,6 @@
 # Pixel Aether Game Server
 
-You need a [pixelaether.com](http://www.pixelaether.com) run your own pixel server
+You need a [pixelaether.com](http://www.pixelaether.com) account to run your own pixel server.
 
 - When you run meteor for the first time, it will autogenerate pixel.json in the root of your project dir
 - Open up pixel.json, and add your login credentials using your pixelaether.com account
