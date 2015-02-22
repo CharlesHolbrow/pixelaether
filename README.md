@@ -1,6 +1,6 @@
 # Pixel Aether Game Server
 
-First, create a [pixelaether.com](http://www.pixelaether.com) account. You will need you email and password to proceed.
+First, create a [pixelaether.com][] account. You will need you email and password to proceed.
 
 ```sh
 # With meteor installed:
@@ -24,7 +24,7 @@ $ meteor --settings pixel.json
 
 ## View Other servers and Maps
 
-Log in to pixelaether.com. In your browser's **JavaScript Console**:
+Log in to [pixelaether.com][]. In your browser's **JavaScript Console**:
 ```js
 // To choose a new map, by name
 Maps.chooseMap('main')
@@ -37,3 +37,6 @@ Rift.open('localhost:3000')
 ```sh
 $ meteor deploy yourname.meteor.com --settings pixel.json
 ```
+
+
+[pixelaether.com]: http://www.pixelaether.com
