@@ -22,6 +22,16 @@ $ meteor --settings pixel.json
   - Contain only letters, numbers, underscore, dash, and space characters
   - Less then 65 characters long
 
+## View Other servers and Maps
+
+Log in to pixelaether.com. In your browser's **JavaScript Console**:
+```js
+// To choose a new map, by name
+Maps.chooseMap('main')
+
+// To view maps on a different server:
+Rift.open('localhost:3000')
+```
 
 ## Deploy to meteor.com
 ```sh
