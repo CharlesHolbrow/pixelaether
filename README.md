@@ -1,6 +1,6 @@
 # Pixel Aether Game Server
 
-First, create a [pixelaether.com][] account. You will need you email and password to proceed.
+First, create a [pixelaether.com][] account. You will need your email and password to proceed.
 
 ```sh
 # With meteor installed:
