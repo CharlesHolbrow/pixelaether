@@ -14,8 +14,8 @@ $ meteor --settings pixel.json
 # 2. Choose a name for your server, and add it to pixel.json
 ```
 
-- When you run meteor for the first time, it will autogenerate pixel.json in the root of your project dir
-- Open up pixel.json, and add your login credentials using your pixelaether.com account
+- When you run meteor for the first time, it will autogenerate `pixel.json` in the root of your project dir
+- Open up `pixel.json`, and add your login credentials using your pixelaether.com account
 - Choose a name for your game server, and add it to `pixel.json`. Server names must be
   - All lower case
   - Begin with a letter
