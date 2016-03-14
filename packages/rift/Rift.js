@@ -30,13 +30,15 @@ var getPortal = function(url){
 
 /*------------------------------------------------------------
 add
+call
 collection
 connection
 list
-login
-logoutAll
+methods
 open
+status
 url
+userId
 ------------------------------------------------------------*/
 
 // ensure portal exists, don't set main connection
@@ -44,6 +46,11 @@ Rift.add = function(url){
   url = urlz.clean(url);
   if (_portals[url]) return;
   _portals[url] = new Portal(url);
+};
+
+Rift.call = function(methodName){
+  _portal.setMethod(methodName, _methods[methodName]);
+  _portal.connection.call.apply(_portal.connection, arguments);
 };
 
 // get collection by name
@@ -64,13 +71,27 @@ Rift.connection = function(url){
   return portal.connection;
 };
 
-Rift.userId = function(url){
-  var portal = getPortal(url);
-  return portal.connection.userId();
-};
-
 Rift.list = function(){
   return Object.keys(_portals);
+};
+
+// Make these methods available on every rift connection
+Rift.methods = function(methods){
+  if (typeof methods !== 'object'){
+    throw new Error('Rift.methods requires an object as an argument')
+    return;
+  }
+
+  for (key in methods){
+    if (_methods[key]){
+      throw new Error('Rift Method already exists:', key);
+      return;
+    }
+    var item = methods[key];
+    if (typeof item === 'function' ){
+      _methods[key] = item;
+    }
+  }
 };
 
 // set the open rift
@@ -105,9 +126,7 @@ Rift.open = function(url, wait){
       computation.stop();
     }
   });
-
 };
-
 
 Rift.status = function(url){
   var portal = getPortal(url);
@@ -120,27 +139,9 @@ Rift.url = function(){
   return _portal.url;
 };
 
-// Make these methods available on every rift connection
-Rift.methods = function(methods){
-  if (typeof methods !== 'object'){
-    throw new Error('Rift.methods requires an object as an argument')
-    return;
-  }
-
-  for (key in methods){
-    if (_methods[key]){
-      throw new Error('Rift Method already exists:', key);
-      return;
-    }
-    var item = methods[key];
-    if (typeof item === 'function' ){
-      _methods[key] = item;
-    }
-  }
-
+Rift.userId = function(url){
+  var portal = getPortal(url);
+  return portal.connection.userId();
 };
 
-Rift.call = function(methodName){
-  _portal.setMethod(methodName, _methods[methodName]);
-  _portal.connection.call.apply(_portal.connection, arguments);
-};
+
