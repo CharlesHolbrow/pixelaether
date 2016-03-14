@@ -13,6 +13,9 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
   api.use(['underscore', 'coffeescript', 'check', 'game-servers-shared'], 'server');
+
+  // This package exports the object originally created by the
+  // game-servers-shared package.
   api.export('GameServers', 'server');
   api.addFiles([
     'server/generate-settings.coffee',
