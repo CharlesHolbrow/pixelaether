@@ -26,10 +26,12 @@ moveCharacterTo: function(mapChar, ctxy) {
     throw new Meteor.Error('User tried to move character she does not own');
 
   if (!ctxy.mapName || ctxy.mapName === mainChar.mapName) {
+    // We can stay on the current map
     var map = Maps.getMap(mainChar.mapName);
     map.moveCharacterTo(mainChar._id, ctxy);
   }
   else
+    // We are switching to a different map
     Characters.toAddr(mainChar._id, ctxy);
 }
 
