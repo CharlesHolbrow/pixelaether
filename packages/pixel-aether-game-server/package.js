@@ -9,7 +9,8 @@ Package.onUse(function(api){
     'maps-server',
     'characters-server',
     'tilesets-server',
-    'login-game-server'
+    'login-game-server',
+    'aether-rift'
   ], 'server');
   api.addFiles(['launch.coffee'], 'server')
 });
