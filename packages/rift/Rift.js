@@ -29,16 +29,16 @@ var getPortal = function(url){
 }
 
 /*------------------------------------------------------------
-add
-call
-collection
-connection
-list
-methods
-open
-status
-url
-userId
+add(url)
+call(methodName)
+collection(name, url)
+connection(url)
+list()
+methods(methods)
+open(url, wait)
+status(url)
+url()
+userId(url)
 ------------------------------------------------------------*/
 
 // ensure portal exists, don't set main connection
