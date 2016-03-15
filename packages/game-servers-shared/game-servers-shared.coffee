@@ -69,12 +69,39 @@ if Meteor.isClient
 
 
 # Generate an ID indicating the object originated on this server
-GameServers.newId = ->
-  return Random.id() + '_' + GameServers.localId()
+GameServers.newId = (firstPart)->
+  serverExt = '_' + GameServers.localId()
+  # If no string is provided, Generate a random id for the first part
+  if typeof firstPart is 'undefined'
+    return Random.id() + serverExt
 
-# Extract serverId from a long character style id
-GameServers.extractServerId = (id)->
-  return id.split('_')?[1]
+  # A string was provided. If it's not valid, throw
+  else if not GameServers.isSimpleId(firstPart)
+    throw new Meteor.Error 'bad-id', 'Not a valid id part: ' + firstPart
+
+  # The provided string was valid
+  return firstPart + serverExt
+
+
+# If the string is a simple ID return it. Else return false
+GameServers.isSimpleId = (str)=>
+  return false if typeof str is not 'string'
+  if /^[A-Za-z0-9]{2,32}$/.test(str) then str else false
+
+# return the serverID if the string is a long_id
+GameServers.extractServerId = (str)=>
+  return false unless typeof str is 'string'
+  parts = str.split('_')
+  return false unless parts.length is 2
+  p0 = GameServers.isSimpleId parts[0]
+  p1 = GameServers.isSimpleId parts[1]
+  if p0 and p1 then p1 else false
+
+# Return a url for the id, or undefined if not found
+GameServers.idToUrl = (id)=>
+  serverId = GameServers.isSimpleId(id) or GameServers.extractServerId(id)
+  return undefined unless serverId
+  return GameServers.findOne(serverId)?.url
 
 
 # There are two places where Game Servers are stored.
