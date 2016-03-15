@@ -12,9 +12,9 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
+  api.export('AetherRift', ['client', 'server'])
   api.use(['rift', 'game-servers', 'coffeescript'], ['client', 'server']);
   api.addFiles('aether-rift.coffee');
-  api.export()
 });
 
 Package.onTest(function(api) {
