@@ -61,10 +61,10 @@ DDS.getObject = function(typeName, name){
   var ddsInstance = instances[typeName];
   if (!ddsInstance)
     return undefined;
-  var content = ddsInstance.content;
-  if (!content.hasOwnProperty(name))
+  var objects = ddsInstance.objects;
+  if (!objects.hasOwnProperty(name))
     return undefined;
-  return content[name];
+  return objects[name];
 }
 
 DDS.prototype.add = function(object){
@@ -82,7 +82,7 @@ DDS.prototype.add = function(object){
   }
 
   // we modify the objects before caching them
-  for (key in object){
+  for (let key in object){
     // check if object has a relativeUrl
     if (
       key.endsWith('Url') &&
@@ -93,19 +93,29 @@ DDS.prototype.add = function(object){
     }
   }
 
-  if (!object.hasOwnProperty('_id'))
-    object._id = Random.id();
+  object._id = GameServers.newId(object.name)
 
   // Add it to our local content
   this.content[object.name] = object;
-  // empty the 'all' array, and fill it again
+  // Empty the 'all' array, and fill it again
   this.all = [];
-  for (key in this.content)
+  for (let key in this.content)
     this.all.push(this.content[key]);
 
   var newObj = new this._class(absoluteUrl, object.name);
-  newObj.init(object);
 
+  // Copy over properties from the object passed to the add
+  // method (including the _id)
+  for (let key in object){ newObj[key] = object[key]; };
+
+  // Note that when calling init on the server side, we do not
+  // wrap the call in try/catch. On the server, we provide our
+  // own data, so we can trust it
+  if (typeof newObj.init === 'function'){
+    newObj.init(object);
+  }
+
+  // Link objects.  
   for (key in newObj){
     if (!key.endsWith('Name')) continue;
     var typeName = key.slice(0, key.length - 4);
