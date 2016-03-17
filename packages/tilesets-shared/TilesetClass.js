@@ -46,15 +46,5 @@ TilesetClass.prototype = {
 
   getUpperLeftY: function(i) {
     return (Math.floor((i-1) / this.width) * this.cellHeight) + 1;
-  },
-
-  init: function(obj){
-    this.imageUrl = obj.imageUrl;
-    this.width  = obj.width;
-    this.height = obj.height;
-    this.tileWidth = obj.tileWidth;
-    this.tileHeight = obj.tileHeight;
-    this.cellWidth = obj.cellWidth;
-    this.cellHeight = obj.cellHeight;
   }
 };

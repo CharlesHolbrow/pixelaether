@@ -26,9 +26,6 @@ MapClass.prototype.init = function(obj){
     if (typeof obj[key] !== mapSpec[key])
       throw new Error('New map missing: ' + key + ' - of type: ' + mapSpec[key]);
 
-  this.chunkHeight =  obj.chunkHeight;
-  this.chunkWidth = obj.chunkWidth;
-  this.tilesetName =  obj.tilesetName;
   this.chunkSize = obj.chunkWidth * obj.chunkHeight;
 };
 

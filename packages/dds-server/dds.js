@@ -1,6 +1,6 @@
 // DDS
 var instances = {};
-var namePattern = /^[a-zA-Z][\w-]*$/;
+var namePattern = /^[a-zA-Z]*$/;
 var rawData = {};
 var absoluteUrl = Meteor.absoluteUrl();
 
@@ -43,6 +43,12 @@ DDS = function(name, psuedoClass){
   // Keep track of all Data Stores on this server
   if (instances[name]) return instances[name];
   instances[name] = this;
+
+  // We set the .incomplete flag here. This may not be needed
+  // on the server, because the data is instantly available.
+  // For now, I'll leave this in, because it mimics the behavior
+  // of the client dds elements.
+  psuedoClass.prototype.incomplete = true
 
   // when we .add an object, return a instance of this class
   self._class = psuedoClass;
