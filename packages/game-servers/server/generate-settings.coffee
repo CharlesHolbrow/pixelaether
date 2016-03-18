@@ -30,6 +30,12 @@ if process.env.NODE_ENV is 'development'
   unless id
     throw new Meteor.Error 'Failed to extract id value from .id'
 
+  # We want server IDs to depend on the app ID. But we do not
+  # need app IDs to be publicly visible, so we take 7 characters
+  # from the app id (which is 19 characters long) and 10
+  # characters from the hash of the id
+  id = id[...7] + SHA256(id)[-10...]
+
   outFileDir = path.join meteorPath, '..'
   settingsFileName = path.join outFileDir, 'pixel.json'
   newSettings = {

@@ -29,17 +29,13 @@ else if isGameServer
 else if Meteor.isClient
   GameServers = new Mongo.Collection 'game_servers'
 
+GameServers.isDevMode = !!Package['is-dev-mode']?.isDevMode
 
 if Meteor.isServer
   # Generate our local id
   env = process.env.NODE_ENV
   id = Meteor.settings?.public?.APP_ID
   if id
-    # We want server IDs to depend on the app ID. But we do not
-    # need app IDs to be publicly visible, so we take 13 characters
-    # from the app id (which is 19 characters long) and 4
-    # characters from the hash of the id
-    id = id[...13] + SHA256(id)[-4...]
     firstChar = if env is 'development' then 'D' else 'P'
     localId = firstChar + id[1...]
 
