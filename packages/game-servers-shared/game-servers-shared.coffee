@@ -15,6 +15,9 @@
 # Master Server should set MASTER_SERVER_URL to an empty string
 isMasterServer = Meteor.isServer and not Meteor.settings.MASTER_SERVER_URL?.length
 isGameServer = Meteor.isServer and not isMasterServer
+
+# Slightly hacky way to check if we are in Dev mode on the
+# client and server without making a call to the server
 isDevMode = !!Package['is-dev-mode']
 
 # Get the augmented id (with 'D' or 'P') and the app name from
@@ -54,7 +57,7 @@ if Meteor.isClient or isMasterServer
 
 # Generate an ID indicating the object originated on this server
 GameServers.newId = (firstPart, serverId)->
-  if Meteor.isClient and not secondPart
+  if Meteor.isClient and not serverId
     throw new Meteor.Error 'Cannot generate a client side id without specifying a serverId'
   serverExt = '_' + (serverId or GameServers.localId())
   # If no string is provided, Generate a random id for the first part
