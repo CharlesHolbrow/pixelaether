@@ -87,10 +87,11 @@ GameServers.extractServerId = (str)=>
   if p0 and p1 then p1 else false
 
 # Return a url for the id, or undefined if not found
-GameServers.idToUrl = (id)=>
+# id can be a long style id or a short style id
+GameServers.idToUrl = (id, userId)=>
   serverId = GameServers.isSimpleId(id) or GameServers.extractServerId(id)
   return undefined unless serverId
-  return GameServers.findOne(serverId)?.url
+  return GameServers.findOneForUser(serverId, userId)?.url
 
 
 # There are two places where Game Servers are stored.
