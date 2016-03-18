@@ -34,8 +34,9 @@ if process.env.NODE_ENV is 'development'
   settingsFileName = path.join outFileDir, 'pixel.json'
   newSettings = {
     MASTER_SERVER_URL: 'http://www.PixelAether.com',
-    APP_ID:id,
-    SERVER_NAME:'',
+    public:
+      APP_ID:id
+      SERVER_NAME: ''
     EMAIL:'',
     PASSWORD:''
   }
@@ -46,7 +47,7 @@ if process.env.NODE_ENV is 'development'
     if oldSettings then newSettings = _.defaults oldSettings, newSettings
 
   # Discourage editing the server ID
-  newSettings.APP_ID = id
+  newSettings.public.APP_ID = id
   # Update server.js if needed
   newJSON = JSON.stringify newSettings, null, 2
   if newJSON != oldJSON
@@ -56,4 +57,4 @@ if process.env.NODE_ENV is 'development'
 
 # If we are starting our server, and we don't have our ID, 
 # Notify the client that it's missing.
-throwMissingSettingsError() if not Meteor.settings?.APP_ID
+throwMissingSettingsError() if not Meteor.settings?.public?.APP_ID

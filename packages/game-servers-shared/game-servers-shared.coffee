@@ -33,7 +33,7 @@ else if Meteor.isClient
 if Meteor.isServer
   # Generate our local id
   env = process.env.NODE_ENV
-  id = Meteor.settings?.APP_ID
+  id = Meteor.settings?.public?.APP_ID
   if id
     # We want server IDs to depend on the app ID. But we do not
     # need app IDs to be publicly visible, so we take 13 characters
@@ -48,7 +48,7 @@ if Meteor.isServer
     return localId or throwMissingSettingsError 'Missing APP_ID in pixel.json'
 
   # Generate our local name
-  name = Meteor.settings?.SERVER_NAME
+  name = Meteor.settings?.public?.SERVER_NAME
   GameServers.localName = ->
     return name or throwMissingSettingsError '\
     You must specify SERVER_NAME in pixel.json. \
