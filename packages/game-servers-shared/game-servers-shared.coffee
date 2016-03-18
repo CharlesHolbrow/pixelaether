@@ -15,6 +15,19 @@
 # Master Server should set MASTER_SERVER_URL to an empty string
 isMasterServer = Meteor.isServer and not Meteor.settings.MASTER_SERVER_URL?.length
 isGameServer = Meteor.isServer and not isMasterServer
+isDevMode = !!Package['is-dev-mode']
+
+# Get the augmented id (with 'D' or 'P') and the app name from
+# pixel.json
+id = Meteor.settings.public.APP_ID
+if not id then throwMissingSettingsError 'Missing public.APP_ID in pixel.json'
+id = (if isDevMode then 'D' else 'P') + id
+name = Meteor.settings.public.SERVER_NAME
+if not name then throwMissingSettingsError '\
+    You must specify SERVER_NAME in pixel.json. \
+    You choose your own server, but it must be all lower case \
+    letters, numbers. underscore and dash characters also \
+    permitted'
 
 if isMasterServer
   GameServers = new Mongo.Collection 'game_servers'
@@ -29,44 +42,21 @@ else if isGameServer
 else if Meteor.isClient
   GameServers = new Mongo.Collection 'game_servers'
 
-GameServers.isDevMode = !!Package['is-dev-mode']?.isDevMode
 
 if Meteor.isServer
-  # Generate our local id
-  env = process.env.NODE_ENV
-  id = Meteor.settings?.public?.APP_ID
-  if id
-    firstChar = if env is 'development' then 'D' else 'P'
-    localId = firstChar + id[1...]
+  GameServers.localId = -> return id
+  GameServers.localName = -> return name
 
-  # Retrieve our local id or throw an error if none exists
-  GameServers.localId = ->
-    return localId or throwMissingSettingsError 'Missing APP_ID in pixel.json'
-
-  # Generate our local name
-  name = Meteor.settings?.public?.SERVER_NAME
-  GameServers.localName = ->
-    return name or throwMissingSettingsError '\
-    You must specify SERVER_NAME in pixel.json. \
-    You choose your own server, but it must be all lower case \
-    letters, numbers. underscore and dash characters also \
-    permitted'
-
-if Meteor.isClient
-  url = urlz.clean Meteor.absoluteUrl()
-
-  GameServers.localId = ->
-    id = GameServers.findOne(url: url)?._id
-    return id or throw new Error 'Failed to Generate localId'
-
-  GameServers.localName = ->
-    name = GameServers.findOne(url: url)?.name
-    return name or throw new Error 'Failed to Generate localName'
+if Meteor.isClient or isMasterServer
+  GameServers.masterId = -> return id
+  GameServers.masterName = -> return name
 
 
 # Generate an ID indicating the object originated on this server
-GameServers.newId = (firstPart)->
-  serverExt = '_' + GameServers.localId()
+GameServers.newId = (firstPart, serverId)->
+  if Meteor.isClient and not secondPart
+    throw new Meteor.Error 'Cannot generate a client side id without specifying a serverId'
+  serverExt = '_' + (serverId or GameServers.localId())
   # If no string is provided, Generate a random id for the first part
   if typeof firstPart is 'undefined'
     return Random.id() + serverExt

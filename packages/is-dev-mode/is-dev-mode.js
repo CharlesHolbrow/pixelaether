@@ -1,1 +1,1 @@
-isDevMode = {test:'testtt'};
+isDevMode = true;
