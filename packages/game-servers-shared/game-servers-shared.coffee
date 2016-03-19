@@ -20,14 +20,20 @@ isGameServer = Meteor.isServer and not isMasterServer
 # client and server without making a call to the server
 isDevMode = !!Package['is-dev-mode']
 
+# On the server, "local" refers to the server where the code is
+# executing. On the clinet "local" refers to the master server.
+# these values are exposed via the GameServers localId() and
+# localName() methods.
+localUrl = Meteor.absoluteUrl()
+
 # Get the augmented id (with 'D' or 'P') and the app name from
 # pixel.json
-id = Meteor.settings.public.APP_ID
-if not id then throwMissingSettingsError 'Missing public.APP_ID in pixel.json'
-id = (if isDevMode then 'D' else 'P') + id
-name = Meteor.settings.public.SERVER_NAME
-if not name then throwMissingSettingsError '\
-    You must specify SERVER_NAME in pixel.json. \
+localId = Meteor.settings.public.APP_ID
+if not localId then throwMissingSettingsError 'Missing public.APP_ID in pixel.json'
+localId = (if isDevMode then 'D' else 'P') + localId
+localName = Meteor.settings.public.SERVER_NAME
+if not localName then throwMissingSettingsError '\
+    You must specify public.SERVER_NAME in pixel.json. \
     You choose your own server, but it must be all lower case \
     letters, numbers. underscore and dash characters also \
     permitted'
@@ -47,12 +53,12 @@ else if Meteor.isClient
 
 
 if Meteor.isServer
-  GameServers.localId = -> return id
-  GameServers.localName = -> return name
+  GameServers.localId = -> return localId
+  GameServers.localName = -> return localName
 
 if Meteor.isClient or isMasterServer
-  GameServers.masterId = -> return id
-  GameServers.masterName = -> return name
+  GameServers.masterId = -> return localId
+  GameServers.masterName = -> return localName
 
 
 # Generate an ID indicating the object originated on this server
@@ -87,10 +93,17 @@ GameServers.extractServerId = (str)=>
   if p0 and p1 then p1 else false
 
 # Return a url for the id, or undefined if not found
-# id can be a long style id or a short style id
-GameServers.idToUrl = (id, userId)=>
-  serverId = GameServers.isSimpleId(id) or GameServers.extractServerId(id)
+# id can be a long style id or a short style id.
+#
+# If we request the localServer, then idToUrl returns
+# immediately with the correct url. If we request another
+# server from the client, then the result is reactive, but may
+# initially return undefined while we wait for the GameServers
+# collection to sync with the server.
+GameServers.idToUrl = (serverId, userId)=>
+  serverId = GameServers.isSimpleId(serverId) or GameServers.extractServerId(serverId)
   return undefined unless serverId
+  return localUrl if serverId == localId
   return GameServers.findOneForUser(serverId, userId)?.url
 
 
@@ -109,9 +122,13 @@ GameServers.idToUrl = (id, userId)=>
 # Meteor.absoluteUrl(). If we are, we can't use Meteor.users
 # to lookup our development servers. We have to use the
 # unofficial Collection._connection._stream.endpoint to find
-# the url, so we can lookup the users collection. 
+# the url, so we can lookup the users collection. This is a bit
+# dangerous, as Collection.connection._stream is unofficial, and
+# might break in the future.
 #
-# This is a bit dangerous, as it might break in the future.
+# Note that the call is reactive. On the client, it may
+# initially return undefined while we wait for the GameServers
+# collection to resolve with the server.
 url = GameServers._connection?._stream?.endpoint or Meteor.absoluteUrl()
 users = GameServers._users = Rift.collection 'users', url
 GameServers.findOneForUser = (selector, userId)->

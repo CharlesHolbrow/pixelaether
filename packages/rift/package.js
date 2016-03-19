@@ -7,8 +7,8 @@ Package.describe({
 
 Package.on_use(function(api){
   api.use('accounts-base', ['client', 'server'], {weak:true})
-  api.use(['meteor', 'deps', 'urlz', 'underscore', 'mongo', 'polyfills', 'ddp']);
-  api.export('Rift');
-  api.addFiles(['Portal.js', 'Rift.js']);
+  api.use(['ecmascript', 'es5-shim', 'meteor', 'deps', 'urlz', 'underscore', 'mongo', 'polyfills', 'ddp']);
+  api.export(['Rift', 'AetherRift']);
+  api.addFiles(['Portal.js', 'Rift.js', 'AetherRift.js']);
 });
 

@@ -37,6 +37,15 @@ getUrlOrThrow = (serverId)=>
   if url then return url
   throw new Meteor.Error 'bad-id', 'AetherRift fail. ServerId not found: ' + serverId
 
+getUrlReactive = (serverId)=>
+  return GameServers.idToUrl(serverId)
+
+AetherRift.getId = ()=>
+  url = Rift.url()
+  if not url
+    throw new Meteor.Error 'aether-rift error', 'Failed to get id - Rift.url() did not return a url.'
+  return GameServers.idToUrl url
+
 AetherRift.add = (serverId)=>
   Rift.add getUrlOrThrow(serverId)
 
@@ -44,11 +53,13 @@ AetherRift.call = (args...)=>
   Rift.call.apply(Rift, args)
 
 AetherRift.collection = (name, serverId)=>
-  url = getUrlOrThrow(serverId)
+  if serverId
+    url = getUrlOrThrow(serverId)
   Rift.collection(name, url)
 
 AetherRift.connection = (serverId)=>
-  Rift.connection getUrlOrThrow(serverId)
+  if serverId then return Rift.connection getUrlOrThrow(serverId)
+  else return Rift.connection()
 
 AetherRift.list = ()=>
   Rift.list()
@@ -61,10 +72,12 @@ AetherRift.open = (serverId, wait)=>
   Rift.open url, wait
 
 AetherRift.status = (serverId)=>
-  Rift.status getUrlOrThrow(serverId)
+  if serverId then return Rift.status getUrlOrThrow(serverId)
+  else return Rift.status()
 
 AetherRift.url = ()=>
   Rift.url()
 
 AetherRift.userId = (serverId)=>
-  Rift.userId getUrlOrThrow(serverId)
+  if serverId then return Rift.userId getUrlOrThrow(serverId)
+  else return Rift.userId()
