@@ -2,15 +2,19 @@
 # - Master Server (client and server)
 # - Game Servers (server only)
 #
-# This file is responsible for initializing the 'GameServers'
-# collection, and adding the .localName and .localId methods.
+# This file is also responsible for initializing:
+# - GameServers                         (mongo collection)
+# - GameServers.masterUsersCollection   (mongo collection)
+# - GameServers.masterServerConnection  (server connection)
+# - GameServers.localName()             (method)
+# - GameServers.localId()               (method)
+# - master game-servers subscription    (subscription)
 #
 # This file also currently actually generates the localId and
 # localName values. These values are derived from
-# 1. NODE_ENV environment var ('production' or 'development')
+# 1. The is-dev-mode package
 # 2. APP_ID, which is automatically inserted into pixel.json
 # 3. SERVER_NAME, which must be manually added to pixel.json
-
 
 # Master Server should set MASTER_SERVER_URL to an empty string
 isMasterServer = Meteor.isServer and not Meteor.settings.MASTER_SERVER_URL?.length
@@ -42,24 +46,33 @@ if isMasterServer
   GameServers = new Mongo.Collection 'game_servers'
   GameServers._ensureIndex {name:1}, {unique: true}
   GameServers._ensureIndex {url:1}, {unique: true}
+  GameServers.masterServerConnection = Meteor.connection
+  GameServers.masterUsersCollection = Meteor.users
 
 else if isGameServer
-  masterServerUrl = Meteor.settings.MASTER_SERVER_URL
-  GameServers = Rift.collection 'game_servers', masterServerUrl
-  Rift.connection(masterServerUrl).subscribe 'game-servers'
+  masterServerUrl         = Meteor.settings.MASTER_SERVER_URL
+  masterServerConnection  = DDP.connect masterServerUrl
+  GameServers             = new Mongo.Collection 'game_servers', {connection: masterServerConnection}
+  masterServerConnection.subscribe 'game-servers'
+  GameServers.masterServerConnection = masterServerConnection
+  GameServers.masterUsersCollection  = new Mongo.Collection 'users', {connection: masterServerConnection}
 
 else if Meteor.isClient
   GameServers = new Mongo.Collection 'game_servers'
-
+  GameServers.masterServerConnection  = Meteor.connection
+  GameServers.masterUsersCollection   = Meteor.users
+  GameServers.masterServerConnection.subscribe 'game-servers'
 
 if Meteor.isServer
-  GameServers.localId = -> return localId
-  GameServers.localName = -> return localName
+  GameServers.localId       = -> return localId
+  GameServers.localName     = -> return localName
 
 if Meteor.isClient or isMasterServer
-  GameServers.masterId = -> return localId
-  GameServers.masterName = -> return localName
+  GameServers.masterId      = -> return localId
+  GameServers.masterName    = -> return localName
 
+GameServers.isMasterServer  = -> return isMasterServer
+GameServers.isGameServer    = -> return isGameServer
 
 # Generate an ID indicating the object originated on this server
 GameServers.newId = (firstPart, serverId)->
@@ -117,24 +130,17 @@ GameServers.idToUrl = (serverId, userId)=>
 # selector is an string ID, or an object containing any
 # combination of 'url', 'name', and 'key' fields.
 #
-# userId defaults to the logged in user. We may want be using
-# findOneForUser over a connection other than
+# Meteor.userId() defaults to the logged in user. We may want
+# be using findOneForUser over a connection other than
 # Meteor.absoluteUrl(). If we are, we can't use Meteor.users
-# to lookup our development servers. We have to use the
-# unofficial Collection._connection._stream.endpoint to find
-# the url, so we can lookup the users collection. This is a bit
-# dangerous, as Collection.connection._stream is unofficial, and
-# might break in the future.
+# to lookup our development servers.
 #
-# Note that the call is reactive. On the client, it may
-# initially return undefined while we wait for the GameServers
-# collection to resolve with the server.
-url = GameServers._connection?._stream?.endpoint or Meteor.absoluteUrl()
-users = GameServers._users = Rift.collection 'users', url
+# Note that the call is reactive.
 GameServers.findOneForUser = (selector, userId)->
+  users = GameServers.masterUsersCollection
   server = GameServers.findOne(selector)
   return server if server
-  userId ?= GameServers._connection.userId()
+  userId ?= GameServers.masterServerConnection.userId()
   return unless userId
   user = users.findOne userId, fields:{devGameServersById:1}
   if typeof selector is 'string'
