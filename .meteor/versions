@@ -1,6 +1,5 @@
 accounts-base@1.2.2
 accounts-password@1.1.4
-aether-rift@0.0.1
 autoupdate@1.2.4
 babel-compiler@5.8.24_1
 babel-runtime@0.1.4
@@ -62,7 +61,6 @@ observe-sequence@1.0.7
 ongoworks:ddp-login@0.2.1
 ordered-dict@1.0.4
 pixel-aether-game-server@0.0.0
-polyfills@0.0.0
 promise@0.5.1
 random@1.0.5
 rate-limit@1.0.0

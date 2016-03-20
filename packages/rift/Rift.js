@@ -10,7 +10,7 @@ Rift is a Psuedo-Singleton.
 Don't call "new Rift". Just use "Rift.open()" etc.
 ------------------------------------------------------------*/
 var _portalDep = new Tracker.Dependency;
-var _portal = new Portal;  // current portal
+var _portal = new Portal(Meteor.absoluteUrl());  // current portal
 var _portals = {};
 _portals[_portal.url] = _portal;
 

@@ -46,22 +46,22 @@ if isMasterServer
   GameServers = new Mongo.Collection 'game_servers'
   GameServers._ensureIndex {name:1}, {unique: true}
   GameServers._ensureIndex {url:1}, {unique: true}
-  GameServers.masterServerConnection = Meteor.connection
-  GameServers.masterUsersCollection = Meteor.users
+  GameServers.masterServerConnection  = Meteor.connection
+  GameServers.masterUsersCollection   = Meteor.users
 
 else if isGameServer
-  masterServerUrl         = Meteor.settings.MASTER_SERVER_URL
-  masterServerConnection  = DDP.connect masterServerUrl
-  GameServers             = new Mongo.Collection 'game_servers', {connection: masterServerConnection}
-  masterServerConnection.subscribe 'game-servers'
-  GameServers.masterServerConnection = masterServerConnection
-  GameServers.masterUsersCollection  = new Mongo.Collection 'users', {connection: masterServerConnection}
+  masterServerUrl                     = Meteor.settings.MASTER_SERVER_URL
+  masterServerConnection              = DDP.connect masterServerUrl
+  GameServers                         = new Mongo.Collection 'game_servers', {connection: masterServerConnection}
+  GameServers.masterUsersCollection   = new Mongo.Collection 'users', {connection: masterServerConnection}
+  GameServers.gameServersSubscription = masterServerConnection.subscribe 'game-servers'
+  GameServers.masterServerConnection  = masterServerConnection
 
 else if Meteor.isClient
   GameServers = new Mongo.Collection 'game_servers'
   GameServers.masterServerConnection  = Meteor.connection
   GameServers.masterUsersCollection   = Meteor.users
-  GameServers.masterServerConnection.subscribe 'game-servers'
+  GameServers.gameServersSubscription = Meteor.subscribe 'game-servers'
 
 if Meteor.isServer
   GameServers.localId       = -> return localId
@@ -112,13 +112,18 @@ GameServers.extractServerId = (str)=>
 # immediately with the correct url. If we request another
 # server from the client, then the result is reactive, but may
 # initially return undefined while we wait for the GameServers
-# collection to sync with the server.
+# and Users collections to sync with the server.
 GameServers.idToUrl = (serverId, userId)=>
   serverId = GameServers.isSimpleId(serverId) or GameServers.extractServerId(serverId)
   return undefined unless serverId
   return localUrl if serverId == localId
   return GameServers.findOneForUser(serverId, userId)?.url
 
+GameServers.urlToId = (url, userId)->
+  if typeof url != 'string' then throw new Meteor.Error 'bad-url', 'url must be a string'
+  url = urlz.clean url
+  return localId if url == localUrl
+  return GameServers.findOneForUser({url}, userId)?._id
 
 # There are two places where Game Servers are stored.
 # 1. Production servers are stored in the GameServers
