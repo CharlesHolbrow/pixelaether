@@ -11,7 +11,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0.3.1');
-  api.use(['coffeescript', 'check', 'mongo', 'random', 'urlz', 'underscore', 'is-dev-mode', 'ddp', 'accounts-base']);
+  api.use(['es5-shim', 'coffeescript', 'check', 'mongo', 'random', 'urlz', 'underscore', 'is-dev-mode', 'ddp', 'accounts-base']);
   api.export(['serverSelectorPattern', 'GameServers'], ['server', 'client']);
   api.export('throwMissingSettingsError', 'server');
   api.addFiles('game-servers-shared.coffee');

@@ -2,6 +2,9 @@
 # to meteor --settings. This json file will contain a pixel
 # aether server ID, which will uniquely identify this server.
 #
+# If we are on the master server, then we overload the serverId.
+# The master server always starts with the word 'MASTER'
+#
 # The ID will derive from our Meteor project id which we
 # retrieve from the .meteor/.id file. To find this file,
 # we search up from the current working directory, which
@@ -30,11 +33,18 @@ if process.env.NODE_ENV is 'development'
   unless id
     throw new Meteor.Error 'Failed to extract id value from .id'
 
+  isMasterServer = Meteor.isServer and not Meteor.settings?.public?.MASTER_SERVER_URL?.length
   # We want server IDs to depend on the app ID. But we do not
   # need app IDs to be publicly visible, so we take 6 characters
   # from the app id (which is 19 characters long) and 10
   # characters from the hash of the id
-  id = id[...6] + SHA256(id)[-10...]
+  #
+  # Ids are 17 characters long. We will make this id 16
+  # characters long, because we will append 'D' or 'P' in the
+  # GameServers package, indicating if this is a master server
+  # or a game server.
+  firstSixChars = if isMasterServer then 'MASTER' else id[...6]
+  id = firstSixChars + SHA256(id)[-10...]
 
   outFileDir = path.join meteorPath, '..'
   settingsFileName = path.join outFileDir, 'pixel.json'

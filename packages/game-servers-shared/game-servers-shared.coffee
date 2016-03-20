@@ -109,12 +109,17 @@ GameServers.extractServerId = (str)=>
 # Return a url for the id, or undefined if not found
 # id can be a long style id or a short style id.
 #
+# If serverId string starts with the word 'MASTER', optionally
+# preceeded by 'D' or 'P', instantly return the master server
+# url.
+#
 # If we request the localServer, then idToUrl returns
 # immediately with the correct url. If we request another
 # server from the client, then the result is reactive, but may
 # initially return undefined while we wait for the GameServers
 # and Users collections to sync with the server.
 GameServers.idToUrl = (serverId, userId)=>
+  return masterServerUrl if /^[DP]?MASTER/.test(serverId)
   serverId = GameServers.isSimpleId(serverId) or GameServers.extractServerId(serverId)
   return undefined unless serverId
   return localUrl if serverId == localId
@@ -162,7 +167,7 @@ serverSelectorPattern = Match.OneOf String, {
 }
 
 # If we are missing --settings pixel.json, or failed to get
-# login credentials from pixel.json. we can throw this error
+# login credentials from pixel.json, we can throw this error
 #
 # Note that game-servers loads after game-server-shared, so we
 # must not throw this error this package is loading
