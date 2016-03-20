@@ -1,4 +1,4 @@
-masterUrl = Meteor.settings?.MASTER_SERVER_URL
+masterUrl = Meteor.settings?.public?.MASTER_SERVER_URL
 email = Meteor.settings?.EMAIL
 password = Meteor.settings?.PASSWORD
 

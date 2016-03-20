@@ -17,8 +17,9 @@
 # 3. SERVER_NAME, which must be manually added to pixel.json
 
 # Master Server should set MASTER_SERVER_URL to an empty string
-isMasterServer = Meteor.isServer and not Meteor.settings.MASTER_SERVER_URL?.length
-isGameServer = Meteor.isServer and not isMasterServer
+masterServerUrl = Meteor.settings?.public?.MASTER_SERVER_URL or Meteor.absoluteUrl()
+isMasterServer  = Meteor.isServer and not Meteor.settings?.public?.MASTER_SERVER_URL?.length
+isGameServer    = Meteor.isServer and not isMasterServer
 
 # Slightly hacky way to check if we are in Dev mode on the
 # client and server without making a call to the server
@@ -50,7 +51,6 @@ if isMasterServer
   GameServers.masterUsersCollection   = Meteor.users
 
 else if isGameServer
-  masterServerUrl                     = Meteor.settings.MASTER_SERVER_URL
   masterServerConnection              = DDP.connect masterServerUrl
   GameServers                         = new Mongo.Collection 'game_servers', {connection: masterServerConnection}
   GameServers.masterUsersCollection   = new Mongo.Collection 'users', {connection: masterServerConnection}
@@ -73,6 +73,7 @@ if Meteor.isClient or isMasterServer
 
 GameServers.isMasterServer  = -> return isMasterServer
 GameServers.isGameServer    = -> return isGameServer
+GameServers.masterServerUrl = -> return masterServerUrl
 
 # Generate an ID indicating the object originated on this server
 GameServers.newId = (firstPart, serverId)->

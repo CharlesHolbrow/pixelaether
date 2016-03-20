@@ -22,7 +22,22 @@ var getPortal = function(url){
   url = urlz.clean(url || (_portal && _portal.url) || Meteor.absoluteUrl());
   var portal = _portals[url];
   if (!portal){
-    portal = new Portal(url);
+
+    if (url === urlz.clean(GameServers.masterServerUrl())){
+      var isMasterServerConnection = true;
+      var connection = GameServers.masterServerConnection;
+    }
+
+    portal = new Portal(url, connection);
+
+    // If this is connetion to the Master Server, then the
+    // GameServers package already initialized the game_servers
+    // and users collections.
+    if (isMasterServerConnection){
+      portal.collections.game_servers = GameServers;
+      portal.collections.users        = GameServers.masterUsersCollection;
+    }
+
     _portals[url] = portal;
   }
   return portal;

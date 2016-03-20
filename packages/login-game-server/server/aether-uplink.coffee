@@ -41,7 +41,10 @@ class Uplink
   connect: (url)->
     if @connection then @connection.disconnect()
     @url = urlz.clean(url)
-    @connection = Rift.connection @url
+    if @url == urlz.clean GameServers.masterServerUrl()
+      @connection = GameServers.masterServerConnection
+    else
+      @connection = Rift.connection @url
 
   login: (email, password)->
     DDP.loginWithPassword @connection, {email:email}, password, (err)->

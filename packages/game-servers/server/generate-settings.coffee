@@ -39,8 +39,8 @@ if process.env.NODE_ENV is 'development'
   outFileDir = path.join meteorPath, '..'
   settingsFileName = path.join outFileDir, 'pixel.json'
   newSettings = {
-    MASTER_SERVER_URL: 'http://www.PixelAether.com',
     public:
+      MASTER_SERVER_URL: 'http://www.PixelAether.com',
       APP_ID:id
       SERVER_NAME: ''
     EMAIL:'',

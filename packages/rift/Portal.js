@@ -3,7 +3,8 @@ Wraps a server connection, and collections from that server
 ------------------------------------------------------------*/
 absoluteUrl = Meteor.absoluteUrl();
 
-Portal = function(url){
+// connection argument is optional
+Portal = function(url, connection){
   var self = this;
 
   if (!url || typeof url !== 'string')
@@ -14,7 +15,9 @@ Portal = function(url){
   this.methods      = {};
   this.isLoopback   = false; // Could we use Meteor.call?
 
-  if (url === absoluteUrl) {
+  if (connection && connection !== Meteor.connection){
+    this.connection = connection;
+  } else if (url === absoluteUrl) {
     this.isLoopback = true;
 
     // If we are on a server, and this is the loopback,

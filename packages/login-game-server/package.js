@@ -19,7 +19,7 @@ Package.onUse(function(api) {
       'random',
       'game-servers',
       'rift',
-      'ongoworks:ddp-login@0.2.0'
+      'ongoworks:ddp-login@0.2.1'
     ],
     'server'
   );
