@@ -32,7 +32,7 @@ getPortalFromServerId = function(serverId){
   // is still possible to identify the serverUrl.
   var serverUrl = GameServers.idToUrl(serverId);
   if (!serverUrl){
-    console.warn('URL for serverId not available: ${serverId}')
+    console.warn(`URL for serverId not available: ${serverId}`)
     return undefined;
   }
 
@@ -68,6 +68,10 @@ AetherRift.connection = function(serverId){
   var portal = getPortalFromServerId(serverId);
   return portal && portal.connection;
 };
+AetherRift.getCurrentServerId = function(){
+  var portal = getPortalFromServerId();
+  return GameServers.urlToId(portal.url);
+};
 // Array of all ServerIds (except the master server)
 AetherRift.listGameServerIds = function(){
   return Object.keys(portals);
@@ -86,7 +90,7 @@ AetherRift.methods = function(methodByName){
     if (typeof item === 'function' ){
       methods[key] = item;
     } else {
-      throw new Error('Method not a function: {key}');
+      throw new Error(`Method not a function: {key}`);
     }
   }
 };
