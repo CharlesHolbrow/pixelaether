@@ -93,12 +93,12 @@ GameServers.newId = (firstPart, serverId)->
 
 
 # If the string is a simple ID return it. Else return false
-GameServers.isSimpleId = (str)=>
+GameServers.isSimpleId = (str)->
   return false if typeof str is not 'string'
   if /^[A-Za-z0-9]{2,32}$/.test(str) then str else false
 
 # return the serverID if the string is a long_id
-GameServers.extractServerId = (str)=>
+GameServers.extractServerId = (str)->
   return false unless typeof str is 'string'
   parts = str.split('_')
   return false unless parts.length is 2
@@ -118,7 +118,7 @@ GameServers.extractServerId = (str)=>
 # server from the client, then the result is reactive, but may
 # initially return undefined while we wait for the GameServers
 # and Users collections to sync with the server.
-GameServers.idToUrl = (serverId, userId)=>
+GameServers.idToUrl = (serverId, userId)->
   return masterServerUrl if /^[DP]?MASTER/.test(serverId)
   serverId = GameServers.isSimpleId(serverId) or GameServers.extractServerId(serverId)
   return undefined unless serverId
