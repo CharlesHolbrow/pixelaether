@@ -2,7 +2,6 @@
 ------------------------------------------------------------*/
 Package.describe({
   summary: 'Manage Connections to Multiple DDP Servers',
-  internal: false
 });
 
 Package.on_use(function(api){

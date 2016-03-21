@@ -53,8 +53,10 @@ var getPortal = function(url){
   // collection if url is the localUrl.
   var serverId = GameServers.urlToId(url);
 
-  if (!serverId)
-    throw new Error('Cannot get serverId for ' + url)
+  if (!serverId){
+    console.warn('Cannot get serverId for ${url}')
+    return undefined;
+  }
 
   if (portals[serverId])
     return portals[serverId];
@@ -98,10 +100,10 @@ Rift.add = function(url){
 };
 
 Rift.call = function(methodName){
-  var args = Array.prototype.slice.call(arguments)
+  var args = Array.prototype.slice.call(arguments);
   var portal = getOpenPortal();
-  portal.setMethod(methodName, methods[methodName])
-  portal.connection.call.apply(portal.connection, args)
+  portal.setMethod(methodName, methods[methodName]);
+  portal.connection.call.apply(portal.connection, args);
 };
 
 // get collection by name
@@ -166,7 +168,7 @@ Rift.open = function(url, wait){
 
   // wait until we are connected before changing the portal
   computation = Tracker.autorun(function(computation){
-    connection = portalToOpen.connection
+    connection = portalToOpen.connection;
     if (connection.status().connected){
       setOpenPortal(portalToOpen)
       computation.stop();
