@@ -198,7 +198,7 @@ Characters.toAddr = (charId, addr)->
     throw new Meteor.Error 'map change fail', 'That character is currently locked'
 
   if transaction.targetServerId and not transaction.currentServerId
-    throw new Error 'Transaction specitied targetServerId but not currentServerId'
+    throw new Error 'Transaction specified targetServerId but not currentServerId'
 
   # Do we need to wait for confirmation before continuing?
   if transaction.requireConfirmation
