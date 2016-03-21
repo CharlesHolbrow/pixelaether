@@ -90,7 +90,7 @@ AetherRift.methods = function(methodByName){
     if (typeof item === 'function' ){
       methods[key] = item;
     } else {
-      throw new Error(`Method not a function: {key}`);
+      throw new Error(`Method not a function: ${key}`);
     }
   }
 };
