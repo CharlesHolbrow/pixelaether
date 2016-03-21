@@ -9,40 +9,62 @@ Rift is a Psuedo-Singleton.
 
 Don't call "new Rift". Just use "Rift.open()" etc.
 ------------------------------------------------------------*/
-var _portalDep = new Tracker.Dependency;
-var _portal = new Portal(Meteor.absoluteUrl());  // current portal
-var _portals = {};
-_portals[_portal.url] = _portal;
+portals = {};
+methods = {};
 
-var _methods = {};
-Rift = {};
+masterServerUrl     = GameServers.masterServerUrl();
+masterServerPortal  = new Portal(masterServerUrl, GameServers.masterServerConnection);
+rOpenPortal         = new ReactiveVar(masterServerPortal, function(p1, p2){return p1 === p2});
+openPortal          = masterServerPortal;
 
-// like Rift.add, but return the portal
-var getPortal = function(url){
-  url = urlz.clean(url || (_portal && _portal.url) || Meteor.absoluteUrl());
-  var portal = _portals[url];
-  if (!portal){
-
-    if (url === urlz.clean(GameServers.masterServerUrl())){
-      var isMasterServerConnection = true;
-      var connection = GameServers.masterServerConnection;
-    }
-
-    portal = new Portal(url, connection);
-
-    // If this is connetion to the Master Server, then the
-    // GameServers package already initialized the game_servers
-    // and users collections.
-    if (isMasterServerConnection){
-      portal.collections.game_servers = GameServers;
-      portal.collections.users        = GameServers.masterUsersCollection;
-    }
-
-    _portals[url] = portal;
-  }
-  return portal;
+// setOpenPortal and getOpenPortal are reactive. To get the open
+// portal non-reactively, just access the openPortal variable.
+setOpenPortal = function(portal){
+  openPortal = portal;
+  rOpenPortal.set(portal);
+}
+getOpenPortal = function(portal){
+  return rOpenPortal.get()
 }
 
+
+// These collections have already been created on the master
+// server.
+masterServerPortal.collections.game_servers = GameServers;
+masterServerPortal.collections.users        = GameServers.masterUsersCollection;
+
+// At this point, we have the masterServerPortal, but we do not
+// have the masterServerId. We want to store all our portals in
+// the portal = {} object, using the serverId as a key. 
+
+// The getPortal method checks if we are trying to get the
+// masterServerPortal, and returns directly without needing to
+// use the serverId key to lookup the object.
+var getPortal = function(url){
+  if (!url)
+    return getOpenPortal();
+
+  url = urlz.clean(url);
+
+  if (url === masterServerUrl)
+    return masterServerPortal;
+
+  // GameServers.urlToId does not check the game_servers mongo
+  // collection if url is the localUrl.
+  var serverId = GameServers.urlToId(url);
+
+  if (!serverId)
+    throw new Error('Cannot get serverId for ' + url)
+
+  if (portals[serverId])
+    return portals[serverId];
+
+  portals[serverId] = new Portal(url);
+  return portals[serverId]
+}
+
+
+Rift = {};
 /*------------------------------------------------------------
 add(url)
 call(methodName)
@@ -59,52 +81,63 @@ userId(url)
 // ensure portal exists, don't set main connection
 Rift.add = function(url){
   url = urlz.clean(url);
-  if (_portals[url]) return;
-  _portals[url] = new Portal(url);
+  if (url === masterServerUrl)
+    return; // masterServerPoral is setup by default
+
+  // GameServers.urlToId handles localServer without waiting
+  // for GameServers.gameServersSubscription.ready()
+  var serverId = GameServers.urlToId(url)
+  if (!serverId)
+    throw new Error('Cannot get serverId for ' + url);
+
+  // Have we aleady added this portal
+  if (portals[serverId])
+    return;
+
+  portals[serverId] = new Portal(url);
 };
 
 Rift.call = function(methodName){
-  _portal.setMethod(methodName, _methods[methodName]);
-  _portal.connection.call.apply(_portal.connection, arguments);
+  var args = Array.prototype.slice.call(arguments)
+  var portal = getOpenPortal();
+  portal.setMethod(methodName, methods[methodName])
+  portal.connection.call.apply(portal.connection, args)
 };
 
 // get collection by name
 Rift.collection = function(name, url){
-  url || _portalDep.depend(); // we should only depend iff no url is provided
-  var portal = getPortal(url);
-  return portal.getCollection(name);
+  return getPortal(url).getCollection(name); // only reactive if no url is provided
 };
 
 // Return the current connection. (reactive)
 // Or return connection via url
 Rift.connection = function(url){
-  if (!url) {
-    _portalDep.depend();
-    return _portal.connection;
-  }
-  portal = getPortal(url)
+  var portal = getPortal(url)
   return portal.connection;
 };
 
 Rift.list = function(){
-  return Object.keys(_portals);
+  var urls = [masterServerUrl];
+  for (serverId in portals)
+    urls.push(portals[serverId].url);
+  return urls;
 };
 
 // Make these methods available on every rift connection
-Rift.methods = function(methods){
-  if (typeof methods !== 'object'){
+Rift.methods = function(methodsByName){
+  if (typeof methodsByName !== 'object'){
     throw new Error('Rift.methods requires an object as an argument')
     return;
   }
 
-  for (key in methods){
-    if (_methods[key]){
+  for (key in methodsByName){
+    if (methods[key]){
       throw new Error('Rift Method already exists:', key);
       return;
     }
-    var item = methods[key];
+    var item = methodsByName[key];
     if (typeof item === 'function' ){
-      _methods[key] = item;
+      methods[key] = item;
     }
   }
 };
@@ -113,31 +146,29 @@ Rift.methods = function(methods){
 // if wait is true, wait to open it until we are connected
 var computation = {stop:function(){}};
 Rift.open = function(url, wait){
-  url = urlz.clean(url);
-
-  // if already connecting/connected
-  if (url === _portal.url) return;
-
-  // if first time connecting
-  if (!_portals[url]) Rift.add(url);
-
   // We might be waiting to connect to an open rift form a
   // previous call to Rift.open(..., true)
   // If we are, stop trying
   computation.stop()
 
+  var portalToOpen = getPortal(url)
+
+  // if already connecting/connected
+  if (portalToOpen === openPortal) return;
+
+  // ensure portal has been created 
+  Rift.add(url);
+
   if (!wait) {
-    _portal = _portals[url];
-    _portalDep.changed();
+    setOpenPortal(portalToOpen)
     return;
   }
 
-  // wait until we are connected before changing the _portalDep
+  // wait until we are connected before changing the portal
   computation = Tracker.autorun(function(computation){
-    connection = _portals[url].connection
+    connection = portalToOpen.connection
     if (connection.status().connected){
-      _portal = _portals[url];
-      _portalDep.changed();
+      setOpenPortal(portalToOpen)
       computation.stop();
     }
   });
@@ -150,8 +181,7 @@ Rift.status = function(url){
 
 // url of the current portal (caution, this is reactive)
 Rift.url = function(){
-  _portalDep.depend();
-  return _portal.url;
+  return getOpenPortal().url
 };
 
 Rift.userId = function(url){
