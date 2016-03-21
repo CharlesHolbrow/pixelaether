@@ -17,7 +17,7 @@
 # 3. SERVER_NAME, which must be manually added to pixel.json
 
 # Master Server should set MASTER_SERVER_URL to an empty string
-masterServerUrl = Meteor.settings?.public?.MASTER_SERVER_URL or Meteor.absoluteUrl()
+masterServerUrl = urlz.clean(Meteor.settings?.public?.MASTER_SERVER_URL or Meteor.absoluteUrl())
 isMasterServer  = Meteor.isServer and not Meteor.settings?.public?.MASTER_SERVER_URL?.length
 isGameServer    = Meteor.isServer and not isMasterServer
 
