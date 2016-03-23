@@ -34,13 +34,14 @@ getPortalAndReturn = function(serverId){
 
   server = GameServers.findOneForUser(serverId);
   if (!server) return undefined;
-  if (serverId !== server._id) 
+  if (serverId !== server._id)
     throw new Error(`WTF GameServers.findOneForUser is broken for $(serverId)`);
 
-  if (server._url === masterServerUrl)
-    connection = masterServerConnection;
+  if (server.url === masterServerUrl && !GameServers.isMasterServer())
+    portal = masterServerPortal;
+  else
+    portal = new Portal(server.url, undefined, serverId);
 
-  portal = new Portal(server.url, connection, serverId);
   portals[serverId] = portal;
   return portal;
 };
@@ -71,7 +72,7 @@ getPortalAndCb = function(serverId, cb){
     if (!computation) return;
     if (computation.stopped) return;
     // The computation is still running, and the timeout has
-    // elapsed. Stop the computation, and cb with an error. 
+    // elapsed. Stop the computation, and cb with an error.
     computation.stop();
     cb(new Meteor.Error('time-out'));
   }, RIFT_TIMEOUT);

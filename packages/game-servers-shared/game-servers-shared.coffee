@@ -8,7 +8,7 @@
 # - GameServers.masterServerConnection  (server connection) (GameServer and client only - Meteor.connection is undefined on the server)
 # - GameServers.localName()             (method)
 # - GameServers.localId()               (method)
-# - master game-servers subscription    (subscription)
+# - GameServers.gameServersSubscription (subscription) (GameServer and client only - Meteor.connection is undefined on the server)
 #
 # This file also currently actually generates the localId and
 # localName values. These values are derived from

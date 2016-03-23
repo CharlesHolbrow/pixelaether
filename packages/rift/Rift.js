@@ -54,7 +54,7 @@ var getPortal = function(url){
   var serverId = GameServers.urlToId(url);
 
   if (!serverId){
-    console.warn('Cannot get serverId for ${url}');
+    console.warn(`Cannot get serverId for ${url}`);
     return undefined;
   }
 
