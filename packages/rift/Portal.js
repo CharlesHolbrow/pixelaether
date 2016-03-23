@@ -4,13 +4,18 @@ Wraps a server connection, and collections from that server
 absoluteUrl = Meteor.absoluteUrl();
 
 // connection argument is optional
-Portal = function(url, connection){
+Portal = function(url, connection, serverId){
   var self = this;
 
   if (!url || typeof url !== 'string')
     throw new Error('Portal constructor requires a url');
 
+  if (!serverId){
+    console.warn(`Portal created without serverId: ${url}`);
+  }
+
   this.url          = url;
+  this.id           = serverId;
   this.collections  = {};
   this.methods      = {};
   this.isLoopback   = false; // Could we use Meteor.call?
@@ -26,12 +31,12 @@ Portal = function(url, connection){
     // object, because we do not want to pass Meteor like this:
     // new Mongo.Collection(name, {connection: Meteor})
     this.connection = Meteor.connection;
-    if (Package['accounts-base']) this.collections['users'] = Meteor.users;
+    if (Package['accounts-base']) this.collections.users = Meteor.users;
 
   } else {
     this.connection = DDP.connect(url);
   }
-}
+};
 
 Portal.prototype = {
 
@@ -47,7 +52,7 @@ Portal.prototype = {
       // will create a normal server side mongo collection
       this.collections[name] = new Mongo.Collection(name, {connection: this.connection});
     }
-    return this.collections[name]
+    return this.collections[name];
   },
 
   setMethod: function(name, func){

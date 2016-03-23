@@ -14,7 +14,7 @@ methods = {};
 
 masterServerUrl     = GameServers.masterServerUrl();
 masterServerPortal  = new Portal(masterServerUrl, GameServers.masterServerConnection);
-rOpenPortal         = new ReactiveVar(masterServerPortal, function(p1, p2){return p1 === p2});
+rOpenPortal         = new ReactiveVar(masterServerPortal, function(p1, p2){return p1 === p2;});
 openPortal          = masterServerPortal;
 
 // setOpenPortal and getOpenPortal are reactive. To get the open
@@ -22,10 +22,10 @@ openPortal          = masterServerPortal;
 setOpenPortal = function(portal){
   openPortal = portal;
   rOpenPortal.set(portal);
-}
+};
 getOpenPortal = function(portal){
-  return rOpenPortal.get()
-}
+  return rOpenPortal.get();
+};
 
 
 // These collections have already been created on the master
@@ -54,7 +54,7 @@ var getPortal = function(url){
   var serverId = GameServers.urlToId(url);
 
   if (!serverId){
-    console.warn('Cannot get serverId for ${url}')
+    console.warn('Cannot get serverId for ${url}');
     return undefined;
   }
 
@@ -62,8 +62,8 @@ var getPortal = function(url){
     return portals[serverId];
 
   portals[serverId] = new Portal(url);
-  return portals[serverId]
-}
+  return portals[serverId];
+};
 
 
 Rift = {};
@@ -88,7 +88,7 @@ Rift.add = function(url){
 
   // GameServers.urlToId handles localServer without waiting
   // for GameServers.gameServersSubscription.ready()
-  var serverId = GameServers.urlToId(url)
+  var serverId = GameServers.urlToId(url);
   if (!serverId)
     throw new Error('Cannot get serverId for ' + url);
 
@@ -114,13 +114,13 @@ Rift.collection = function(name, url){
 // Return the current connection. (reactive)
 // Or return connection via url
 Rift.connection = function(url){
-  var portal = getPortal(url)
+  var portal = getPortal(url);
   return portal.connection;
 };
 
 Rift.list = function(){
   var urls = [masterServerUrl];
-  for (serverId in portals)
+  for (let serverId in portals)
     urls.push(portals[serverId].url);
   return urls;
 };
@@ -128,14 +128,12 @@ Rift.list = function(){
 // Make these methods available on every rift connection
 Rift.methods = function(methodsByName){
   if (typeof methodsByName !== 'object'){
-    throw new Error('Rift.methods requires an object as an argument')
-    return;
+    throw new Error('Rift.methods requires an object as an argument');
   }
 
-  for (key in methodsByName){
+  for (let key in methodsByName){
     if (methods[key]){
       throw new Error('Rift Method already exists:', key);
-      return;
     }
     var item = methodsByName[key];
     if (typeof item === 'function' ){
@@ -151,9 +149,9 @@ Rift.open = function(url, wait){
   // We might be waiting to connect to an open rift form a
   // previous call to Rift.open(..., true)
   // If we are, stop trying
-  computation.stop()
+  computation.stop();
 
-  var portalToOpen = getPortal(url)
+  var portalToOpen = getPortal(url);
 
   // if already connecting/connected
   if (portalToOpen === openPortal) return;
@@ -162,7 +160,7 @@ Rift.open = function(url, wait){
   Rift.add(url);
 
   if (!wait) {
-    setOpenPortal(portalToOpen)
+    setOpenPortal(portalToOpen);
     return;
   }
 
@@ -170,7 +168,7 @@ Rift.open = function(url, wait){
   computation = Tracker.autorun(function(computation){
     connection = portalToOpen.connection;
     if (connection.status().connected){
-      setOpenPortal(portalToOpen)
+      setOpenPortal(portalToOpen);
       computation.stop();
     }
   });
@@ -183,7 +181,7 @@ Rift.status = function(url){
 
 // url of the current portal (caution, this is reactive)
 Rift.url = function(){
-  return getOpenPortal().url
+  return getOpenPortal().url;
 };
 
 Rift.userId = function(url){
