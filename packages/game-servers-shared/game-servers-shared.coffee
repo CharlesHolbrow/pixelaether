@@ -5,7 +5,7 @@
 # This file is also responsible for initializing:
 # - GameServers                         (mongo collection)
 # - GameServers.masterUsersCollection   (mongo collection)
-# - GameServers.masterServerConnection  (server connection)
+# - GameServers.masterServerConnection  (server connection) (GameServer and client only - Meteor.connection is undefined on the server)
 # - GameServers.localName()             (method)
 # - GameServers.localId()               (method)
 # - master game-servers subscription    (subscription)
@@ -47,7 +47,6 @@ if isMasterServer
   GameServers = new Mongo.Collection 'game_servers'
   GameServers._ensureIndex {name:1}, {unique: true}
   GameServers._ensureIndex {url:1}, {unique: true}
-  GameServers.masterServerConnection  = Meteor.connection
   GameServers.masterUsersCollection   = Meteor.users
 
 else if isGameServer
@@ -151,9 +150,20 @@ GameServers.findOneForUser = (selector, userId)->
   users = GameServers.masterUsersCollection
   server = GameServers.findOne(selector)
   return server if server
+
+  # The master Server cannot be logged in to itself, so if we
+  # are on the masterServer, and we failed to get the info from
+  # the GameServers collection, AND no userId was specified,
+  # just assume failure.
+  # Another option would be checking every single user Document
+  # which would just be one mongodb call -- however, I have not
+  # yet thought through the security implications.
+  return if isMasterServer and not userId
+
   userId ?= GameServers.masterServerConnection.userId()
   return unless userId
   user = users.findOne userId, fields:{devGameServersById:1}
+  return unless user
   if typeof selector is 'string'
     return user.devGameServersById[selector]
   else

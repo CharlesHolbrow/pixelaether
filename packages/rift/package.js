@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.on_use(function(api){
-  api.use('accounts-base', ['client', 'server'], {weak:true})
+  api.use('accounts-base', ['client', 'server'], {weak:true});
   api.use([
     'ecmascript',
     'es5-shim',
