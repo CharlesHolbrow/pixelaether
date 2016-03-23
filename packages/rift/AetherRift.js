@@ -32,11 +32,13 @@ getPortalFromServerId = function(serverId){
 
   server = GameServers.findOneForUser(serverId);
   if (!server) return undefined;
+  if (serverId !== server._id) 
+    throw new Error('WTF GameServers.findOneForUser is broken');
 
   if (server._url === masterServerUrl)
     connection = masterServerConnection;
 
-  portal = new Portal(server.url, connection, server._id);
+  portal = new Portal(server.url, connection, serverId);
   portals[serverId] = portal;
   return portal;
 };
