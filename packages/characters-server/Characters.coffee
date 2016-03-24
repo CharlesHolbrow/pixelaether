@@ -107,20 +107,20 @@ Characters.add = (conf)->
 
   # add default values
   # If no _id is provided, assume the character is originating on this server
-  conf._id ?= GameServers.newId()
-  conf.tilesetSelector ?= defaultTS
-  conf.tilesetSelector.name ?= defaultTS.name
-  conf.tilesetSelector.url ?= defaultTS.url
-  conf.tilesetSelector.index ?= 1
+  conf._id                    ?= GameServers.newId()
+  conf.tilesetSelector        ?= defaultTS
+  conf.tilesetSelector.name   ?= defaultTS.name
+  conf.tilesetSelector.url    ?= defaultTS.url
+  conf.tilesetSelector.index  ?= 1
 
   # Create and insert in master characters collection
   mainChar = 
-    serverId: GameServers.localId() # Where is char currently?
-    ownerId: conf.ownerId # Might be undefined
-    mapName: null
-    _id: conf._id
-    tilesetSelector: conf.tilesetSelector
-    transaction: null
+    _id:              conf._id
+    ownerId:          conf.ownerId          # Might be undefined
+    serverId:         GameServers.localId() # Where is char currently?
+    mapName:          null
+    transaction:      null
+    tilesetSelector:  conf.tilesetSelector
 
   return Characters.insert mainChar # insert returns _id
 
@@ -137,9 +137,8 @@ Characters.toAddr = (charId, addr)->
   if not mainChar
     throw new Meteor.Error 'not found', 'Character not found:' + charId
 
-  localId = GameServers.localId()
-  localName = GameServers.localName()
-
+  localId     = GameServers.localId()
+  localName   = GameServers.localName()
   transaction =
     id: Random.id()
     transactionStartTime: new Date
@@ -255,8 +254,8 @@ Characters.resolveTransaction = (charId, transactionId)->
 
   targetMapName = transaction.targetAddr.mapName
   if targetMapName
-    targetMap = Maps.getMap targetMapName
-    addr = transaction.targetAddr
+    addr       = transaction.targetAddr
+    targetMap  = Maps.getMap targetMapName
     newMapChar =
       tilesetSelector: mainChar.tilesetSelector
       _id: charId
