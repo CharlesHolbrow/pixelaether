@@ -126,7 +126,7 @@ AetherRift.listGameServerIds = function(){
   return Object.keys(portals);
 };
 
-AetherRift.methods = function(methodByName){
+AetherRift.methods = function(methodsByName){
   if (typeof methodsByName !== 'object'){
     throw new Error('Rift.methods requires an object as an argument');
   }
