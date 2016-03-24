@@ -28,6 +28,7 @@ var RIFT_TIMEOUT = 15 * 1000;
 // If the server we are requesting is a development server,
 // the document will probably be from the the users collection.
 getPortalAndReturn = function(serverId){
+  var portal;
 
   if (!serverId) return getOpenPortal();
   if (portals[serverId]) return portals[serverId];
@@ -37,10 +38,13 @@ getPortalAndReturn = function(serverId){
   if (serverId !== server._id)
     throw new Error(`WTF GameServers.findOneForUser is broken for $(serverId)`);
 
-  if (server.url === masterServerUrl && !GameServers.isMasterServer())
-    portal = masterServerPortal;
-  else
-    portal = new Portal(server.url, undefined, serverId);
+  if (GameServers.isGameServer() && server.url === masterServerUrl){
+    portal = new Portal(server.url, serverId, GameServers.masterServerConnection);
+    portal.collections.game_servers = GameServers;
+    portal.collections.users = GameServers.masterUsersCollection;
+  } else {
+    portal = new Portal(server.url, serverId, undefined);
+  }
 
   portals[serverId] = portal;
   return portal;

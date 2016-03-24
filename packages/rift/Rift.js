@@ -12,10 +12,38 @@ Don't call "new Rift". Just use "Rift.open()" etc.
 portals = {};
 methods = {};
 
-masterServerUrl     = GameServers.masterServerUrl();
-masterServerPortal  = new Portal(masterServerUrl, GameServers.masterServerConnection);
-rOpenPortal         = new ReactiveVar(masterServerPortal, function(p1, p2){return p1 === p2;});
-openPortal          = masterServerPortal;
+masterServerUrl   = GameServers.masterServerUrl();
+localServerUrl    = GameServers.localUrl();
+localServerId     = GameServers.localId();
+localServerPortal = new Portal(localServerUrl, localServerId, Meteor.connection);
+rOpenPortal       = new ReactiveVar(localServerPortal, function(p1, p2){return p1 === p2;});
+openPortal        = localServerPortal;
+
+// Initialize the portals collection
+portals[localServerId] = openPortal;
+
+// If we are on the MasterServer OR on the client we will have
+// already created The local GameServers collection.
+if (GameServers.isMasterServer() || Meteor.isClient)
+  localServerPortal.collections.game_servers = GameServers;
+// No matter where we are, the local Users collection has
+// already been created. If we are missing the accounts-base
+// package, Meteor.users will be undefined, but that is okay.
+localServerPortal.collections.users = Meteor.users;
+// Creating a collection a second time (per ddp connection)
+// throws an error. If we are on the MasterServer (or on a
+// client), game_servers and users collections have been added
+// to the local portal, and we are safe from accidentall trying
+// to create them a second time when we call
+// Rift.collection('users') or Rift.collection('game_servers').
+//
+// Caution: If we are on a game server, these collections have
+// have already been created, and we must avoid creating them
+// again:
+//
+// 1. Master Server users Collection
+// 2. Master Server game_servers Collection
+
 
 // setOpenPortal and getOpenPortal are reactive. To get the open
 // portal non-reactively, just access the openPortal variable.
@@ -27,27 +55,10 @@ getOpenPortal = function(portal){
   return rOpenPortal.get();
 };
 
-
-// These collections have already been created on the master
-// server.
-masterServerPortal.collections.game_servers = GameServers;
-masterServerPortal.collections.users        = GameServers.masterUsersCollection;
-
-// At this point, we have the masterServerPortal, but we do not
-// have the masterServerId. We want to store all our portals in
-// the portal = {} object, using the serverId as a key. 
-
-// The getPortal method checks if we are trying to get the
-// masterServerPortal, and returns directly without needing to
-// use the serverId key to lookup the object.
 var getPortal = function(url){
-  if (!url)
-    return getOpenPortal();
+  if (!url) return getOpenPortal();
 
   url = urlz.clean(url);
-
-  if (url === masterServerUrl)
-    return masterServerPortal;
 
   // GameServers.urlToId does not check the game_servers mongo
   // collection if url is the localUrl.
@@ -58,11 +69,23 @@ var getPortal = function(url){
     return undefined;
   }
 
-  if (portals[serverId])
-    return portals[serverId];
+  if (portals[serverId]) return portals[serverId];
 
-  portals[serverId] = new Portal(url);
-  return portals[serverId];
+  // The Portal does not exists, and we must create it. On a
+  // GameServer, the connection to the Master Server has already
+  // been created. Don't try to create an additional one.
+  if (GameServers.masterServerConnection && url === masterServerUrl){
+    connection = GameServers.masterServerConnection;
+  }
+
+  var newPortal = new Portal(url, serverId, connection);
+
+  if (GameServers.isGameServer() && url === masterServerUrl){
+    newPortal.collections.game_servers  = GameServers;
+    newPortal.collections.users         = GameServers.masterUsersCollection;
+  }
+  portals[serverId] = newPortal;
+  return newPortal;
 };
 
 

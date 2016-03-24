@@ -1,18 +1,15 @@
 /*------------------------------------------------------------
 Wraps a server connection, and collections from that server
 ------------------------------------------------------------*/
-absoluteUrl = Meteor.absoluteUrl();
-
 // connection argument is optional
-Portal = function(url, connection, serverId){
+Portal = function(url, serverId, connection){
   var self = this;
 
-  if (!url || typeof url !== 'string')
+  if (typeof url !== 'string')
     throw new Error('Portal constructor requires a url');
 
-  if (!serverId){
-    console.warn(`Portal created without serverId: ${url}`);
-  }
+  if (typeof serverId !== 'string')
+    throw new Error(`Portal created without serverId: ${url}`);
 
   this.url          = url;
   this.id           = serverId;
@@ -22,7 +19,7 @@ Portal = function(url, connection, serverId){
 
   if (connection && connection !== Meteor.connection){
     this.connection = connection;
-  } else if (url === absoluteUrl) {
+  } else if (url === Meteor.absoluteUrl()) {
     this.isLoopback = true;
 
     // If we are on a server, and this is the loopback,

@@ -8,6 +8,7 @@
 # - GameServers.masterServerConnection  (server connection) (GameServer and client only - Meteor.connection is undefined on the server)
 # - GameServers.localName()             (method)
 # - GameServers.localId()               (method)
+# - GameServers.localUrl()              (method)
 # - GameServers.gameServersSubscription (subscription) (GameServer and client only - Meteor.connection is undefined on the server)
 #
 # This file also currently actually generates the localId and
@@ -23,6 +24,7 @@ isGameServer    = Meteor.isServer and not isMasterServer
 
 # Slightly hacky way to check if we are in Dev mode on the
 # client and server without making a call to the server
+# NOTE: in Meteor 1.3 there will be a easy way to do this.
 isDevMode = !!Package['is-dev-mode']
 
 # On the server, "local" refers to the server where the code is
@@ -62,17 +64,18 @@ else if Meteor.isClient
   GameServers.masterUsersCollection   = Meteor.users
   GameServers.gameServersSubscription = Meteor.subscribe 'game-servers'
 
-if Meteor.isServer
-  GameServers.localId       = -> return localId
-  GameServers.localName     = -> return localName
 
 if Meteor.isClient or isMasterServer
-  GameServers.masterId      = -> return localId
   GameServers.masterName    = -> return localName
+if isGameServer
+  GameServers.masterName    = -> throw new Meteor.Error 'masterName method not available on GameServers'
 
 GameServers.isMasterServer  = -> return isMasterServer
 GameServers.isGameServer    = -> return isGameServer
 GameServers.masterServerUrl = -> return masterServerUrl
+GameServers.localUrl        = -> return localUrl
+GameServers.localId         = -> return localId
+GameServers.localName       = -> return localName
 
 # Generate an ID indicating the object originated on this server
 GameServers.newId = (firstPart, serverId)->
