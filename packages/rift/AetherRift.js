@@ -95,6 +95,24 @@ getPortalAndCb = function(serverId, cb){
 
 AetherRift = {};
 
+// Q: Why can we only call methods on the open Rift?
+// A: It will be much easier to write our rift methods if we can
+// always assume that the collections and connection will be
+// available. On the open rift, we are gauranteed that the
+// connection has at least been created. This saves us the
+// hassle of checking if 'SomeColl' exists every time we call
+// var SomeColl = AetherRift.collection('some');
+//
+// Of course, you can easily call methods on non open
+// connections not open. Just get the connection with:
+//
+// var con = AetherRift.connection(serverId);
+// con.call(methodName, arg1, ...)
+//
+// Note that client method stubs are added lazily. So when using
+// connection.call, you may or may not trigger the client stub,
+// depending on weather the same method has been called via
+// AetherRift.
 AetherRift.call = function(methodName){
   var args    = Array.prototype.slice.call(arguments);
   var portal  = getOpenPortal();
