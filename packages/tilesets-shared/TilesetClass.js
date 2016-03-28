@@ -23,10 +23,10 @@ exampleData = {
 }
 ------------------------------------------------------------*/
 
-TilesetClass = function(sourceUrl, name){
+TilesetClass = function(serverId, name){
   // generic, for all objects
   this.incomplete = true;
-  this.sourceUrl = sourceUrl;
+  this.serverId = serverId;
   this.name = name;
 
   // unique to this DDS Type
@@ -37,7 +37,7 @@ TilesetClass = function(sourceUrl, name){
   this.tileHeight = 0;
   this.cellWidth = 0;
   this.cellHeight = 0;
-}
+};
 
 TilesetClass.prototype = {
   getUpperLeftX: function(i) {

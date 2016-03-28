@@ -8,10 +8,10 @@ These methods are responsible for verifying valid inputs, BUT
 Server side Meteor methods are responsible for verifying a
 user is allowed to call these
 ------------------------------------------------------------*/
-MapClass = function(sourceUrl, name){
+MapClass = function(serverId, name){
   // all dds types must do this
   this.name = name;
-  this.sourceUrl = sourceUrl;
+  this.serverId = serverId;
   this.incomplete = true;
 
   // unique to this dds type
@@ -64,7 +64,7 @@ MapClass.prototype.checkCtxy = function(ctxy){
     this.throw('x out of bounds');
   if (ctxy.ty >= this.chunkHeight || ctxy.ty < 0)
     this.throw('y out of bounds');
-  return ctxy
+  return ctxy;
 };
 
 MapClass.prototype.deactivateCharacter = function(selector){
@@ -83,7 +83,7 @@ MapClass.prototype.query = function(ctxy){
   // i.e. ._resolve would add this map to the addr
   results = [];
   if (this.incomplete) return results;
-  this.checkCtxy(ctxy)
+  this.checkCtxy(ctxy);
 
   var chunk = this.chunks.findOne({cx: ctxy.cx, cy:ctxy.cy});
   var index = ctxy.ty * this.chunkWidth + ctxy.tx;

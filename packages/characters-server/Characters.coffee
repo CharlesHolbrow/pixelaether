@@ -49,7 +49,7 @@ Meteor.publish 'map-character', (mapName, id)->
 # ObjectIncluding with Match.Optional means
 tilesetSelectorPattern =
   name: String
-  url: Match.Optional String
+  serverId: Match.Optional String
   index: Match.Optional Match.Integer
 
 #   Example: IF the object has a 'cx' key, the 'cx' value MUST be an integer
@@ -92,7 +92,7 @@ addrPattern = Match.OneOf(
 
 defaultTS =
   name: 'characters',
-  url: Meteor.absoluteUrl()
+  serverId: GameServers.localId()
 
 
 # Create A Character.
@@ -107,11 +107,11 @@ Characters.add = (conf)->
 
   # add default values
   # If no _id is provided, assume the character is originating on this server
-  conf._id                    ?= GameServers.newId()
-  conf.tilesetSelector        ?= defaultTS
-  conf.tilesetSelector.name   ?= defaultTS.name
-  conf.tilesetSelector.url    ?= defaultTS.url
-  conf.tilesetSelector.index  ?= 1
+  conf._id                      ?= GameServers.newId()
+  conf.tilesetSelector          ?= defaultTS
+  conf.tilesetSelector.name     ?= defaultTS.name
+  conf.tilesetSelector.serverId ?= defaultTS.serverId
+  conf.tilesetSelector.index    ?= 1
 
   # Create and insert in master characters collection
   mainChar = 

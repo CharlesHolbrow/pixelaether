@@ -51,6 +51,7 @@ getPortalAndReturn = function(serverId){
 };
 
 getPortalAndCb = function(serverId, cb){
+
   if (typeof cb === 'function') cb = _.once(cb);
 
   // check if we are able to get the portal immediately
@@ -121,15 +122,19 @@ AetherRift.call = function(methodName){
 };
 
 AetherRift.collection = function(name, serverId, cb){
-  if (typeof cb === 'function'){ outerCb = (err, portal)=>{
-    var collection = portal && portal.getCollection(name);
-    cb(err, collection);
-  };}
-  let portal = getPortalAndCb(serverId, outerCb);
+  var outerCb;
+  if (typeof cb === 'function') {
+    outerCb = (err, portal)=> {
+      var collection = portal && portal.getCollection(name);
+      cb(err, collection);
+    };
+  }
+  var portal = getPortalAndCb(serverId, outerCb);
   return portal && portal.getCollection(name);
 };
 
 AetherRift.connection = function(serverId, cb){
+  var outerCb;
   if (typeof cb === 'function'){ outerCb = (err, portal)=>{
     var connection = portal && portal.connection;
     cb(err, connection);
@@ -231,6 +236,7 @@ AetherRift.ready = function(){
 };
 
 AetherRift.status = function(serverId, cb){
+  var outerCb;
   if (typeof cb === 'function'){ outerCb = (err, portal)=>{
     let status = portal && portal.connection.status();
     cb(err, status);
@@ -247,6 +253,7 @@ AetherRift.url = function(){
 // userId() Returns undefined if portal is not available.
 // userId() Returns null if we are not logged in.
 AetherRift.userId = function(serverId, cb){
+  var outerCb;
   if (typeof cb === 'function'){ outerCb = (err, portal)=>{
     var userId = portal && portal.connection.userId();
     cb(err, userId);
