@@ -127,9 +127,12 @@ MapClass.prototype.throw = function(reason){
   throw new Meteor.Error(this.name + ' Map Error: ' + (reason || 'Unknown Error'));
 };
 
-var ctxyPattern = Match.ObjectIncluding({
-  cx: Match.Integer,
-  cy: Match.Integer,
-  tx: Match.Integer,
-  ty: Match.Integer
+var ctxyPattern = Match.Where(function(input){
+  var ctxy = _.pick(input, 'cx', 'cy', 'tx', 'ty');
+  return Match.test(ctxy, {
+    cx: Match.Integer,
+    cy: Match.Integer,
+    tx: Match.Integer,
+    ty: Match.Integer
+  });
 });

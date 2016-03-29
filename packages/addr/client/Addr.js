@@ -3,7 +3,7 @@ An address marks a pixelaether position in World Coordinates
 
 See coors.md in the docs for more info
 ------------------------------------------------------------*/
-window.Addr = Addr = function(addr){
+Addr = function(addr){
   addr = addr || {};
 
   this.px = addr.px || 0;
@@ -37,8 +37,8 @@ copyTo: function(target){
 
 resolve: function(map, tileset){
 
-  var map = map || this._map;
-  var tileset = tileset || this._tileset;
+  map = map || this._map;
+  tileset = tileset || this._tileset;
 
   if (tileset){
     this._tileset = tileset;
@@ -92,4 +92,4 @@ set: function(coords){
   if (typeof coords.cy === 'number') this.cy = coords.cy;
 },
 
-} // Addr.prototype
+}; // Addr.prototype
