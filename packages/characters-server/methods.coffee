@@ -32,6 +32,11 @@ Meteor.methods
     unless serverInfo
       throw new Meteor.Error 'not found', 'The server that owns that character could not be found'
 
+    # Math 16, 2016 - Rift.connection returns immediately, while
+    # AetherRift.connection might not return a result
+    # immediately. In this case we have the url, so it's fastest
+    # to use the Rift interface instead of the AetherRift
+    # interface.
     connection = Rift.connection serverInfo.url
     mainChar = connection.call 'getCharacterInfo', characterId
 
