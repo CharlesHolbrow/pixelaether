@@ -145,7 +145,15 @@ AetherRift.connection = function(serverId, cb){
 
 AetherRift.getCurrentServerId = function(){
   var portal = getOpenPortal();
-  return portal.id || GameServers.urlToId(portal.url);
+  var serverId = portal.id || GameServers.urlToId(portal.url);
+
+  if (typeof serverId !== 'string'){
+    var msg = 'Failed to get current serverID';
+    console.error(msg + ': ' + JSON.stringify(portal));
+    throw new Meteor.Error(msg);
+  }
+
+  return serverId;
 };
 
 // Array of all ServerIds
