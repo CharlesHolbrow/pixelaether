@@ -36,10 +36,10 @@ localUrl = Meteor.absoluteUrl()
 # Get the augmented id (with 'D' or 'P') and the app name from
 # pixel.json
 localId = Meteor.settings.public.APP_ID
-if not localId then throwMissingSettingsError 'Missing public.APP_ID in pixel.json'
+if not localId then console.warn 'Missing public.APP_ID in pixel.json'
 localId = (if isDevMode then 'D' else 'P') + localId
 localName = Meteor.settings.public.SERVER_NAME
-if not localName then throwMissingSettingsError '\
+if not localName then console.warn '\
     You must specify public.SERVER_NAME in pixel.json. \
     You choose your own server, but it must be all lower case \
     letters, numbers. underscore and dash characters also \
