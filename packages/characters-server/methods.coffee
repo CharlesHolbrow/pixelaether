@@ -4,7 +4,7 @@ Meteor.methods
     check characterId, String
 
     unless @userId
-      throw new Meteor.Error 'logged-out', 'Anonymous user tried to call acceptCharacter'
+      throw new Meteor.Error 'logged-out', 'Anonymous user tried to call addCharacter'
 
     mainChar = Characters.findOne characterId
     # If the character already exists in our collection, our
@@ -73,7 +73,7 @@ Meteor.methods
   # or the user who owns charId. At least one must confirm that
   confirmTransaction: (charId, transactionId)->
     unless @userId
-      throw new Meteor.Error 'logged-out', 'You must be logged in to confirmServerChange'
+      throw new Meteor.Error 'logged-out', 'You must be logged in to confirmTransaction'
 
     char = Characters.findOne {_id:charId, 'transaction.id':transactionId, ownerId:@userId}
     unless char

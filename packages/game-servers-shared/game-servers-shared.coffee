@@ -13,7 +13,7 @@
 #
 # This file also currently actually generates the localId and
 # localName values. These values are derived from
-# 1. The is-dev-mode package
+# 1. Meteor.isDevelopment
 # 2. APP_ID, which is automatically inserted into pixel.json
 # 3. SERVER_NAME, which must be manually added to pixel.json
 
@@ -21,11 +21,6 @@
 masterServerUrl = urlz.clean(Meteor.settings?.public?.MASTER_SERVER_URL or Meteor.absoluteUrl())
 isMasterServer  = Meteor.isServer and not Meteor.settings?.public?.MASTER_SERVER_URL?.length
 isGameServer    = Meteor.isServer and not isMasterServer
-
-# Slightly hacky way to check if we are in Dev mode on the
-# client and server without making a call to the server
-# NOTE: in Meteor 1.3 there will be a easy way to do this.
-isDevMode = !!Package['is-dev-mode']
 
 # On the server, "local" refers to the server where the code is
 # executing. On the clinet "local" refers to the master server.
@@ -37,7 +32,7 @@ localUrl = Meteor.absoluteUrl()
 # pixel.json
 localId = Meteor.settings.public.APP_ID
 if not localId then console.warn 'Missing public.APP_ID in pixel.json'
-localId = (if isDevMode then 'D' else 'P') + localId
+localId = (if Meteor.isDevelopment then 'D' else 'P') + localId
 localName = Meteor.settings.public.SERVER_NAME
 if not localName then console.warn '\
     You must specify public.SERVER_NAME in pixel.json. \
