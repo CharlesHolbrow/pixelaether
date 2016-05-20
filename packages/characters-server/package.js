@@ -17,7 +17,6 @@ Package.onUse(function(api){
     ],
     'server'
   );
-  api.imply(['characters-shared'], 'server');
   api.export(['Characters'], 'server');
   api.addFiles(
     [

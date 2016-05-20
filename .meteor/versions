@@ -14,7 +14,6 @@ caching-compiler@1.0.4
 caching-html-compiler@1.0.6
 callback-hook@1.0.8
 characters-server@0.0.0
-characters-shared@0.0.1
 check@1.2.1
 coffeescript@1.0.17
 ddp@1.2.5
