@@ -21,3 +21,4 @@ check
 standard-minifier-css
 standard-minifier-js
 ecmascript
+es5-shim
