@@ -3,7 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.use(['mongo', 'urlz', 'random', 'check', 'ecmascript', 'es5-shim', 'game-servers'], 'server');
+  api.use(['urlz', 'random', 'check', 'ecmascript', 'es5-shim', 'game-servers'], 'server');
   api.export('DDS', 'server');
   api.addFiles(['dds.js'], 'server');
 });
