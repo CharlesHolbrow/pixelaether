@@ -2,11 +2,9 @@ Package.describe({
   name: 'login-game-server',
   summary: 'coordinate logins with master server',
   version: '1.0.0',
-  git: ' /* Fill me in! */ '
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.0.2.1');
   api.imply('game-servers', 'server');
   api.use(['accounts-password', 'coffeescript'], ['client', 'server']);
   api.use(

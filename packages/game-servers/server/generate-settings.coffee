@@ -105,7 +105,6 @@ throwMissingSettingsError = (message)->
   """
 
 
-
 # If we are starting our server, and we don't have our ID, 
 # Notify the client that it's missing.
 throwMissingSettingsError() if not Meteor.settings?.public?.APP_ID

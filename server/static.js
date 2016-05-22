@@ -65,13 +65,4 @@ staticServerContent = function(){
     callback(null, chunk);
   });
 
-  c = Characters.findOne();
-  if (!c) {
-    Characters.add({
-      name: 'jill',
-      cx: 1,
-      cy: 1
-    });
-  }
-
-}
+};
