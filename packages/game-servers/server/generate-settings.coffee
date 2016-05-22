@@ -15,7 +15,7 @@
 # We get the last .meteor in the path, and:
 # 1. Assume that .meteor/.id exists
 # 2. Assume we can write 'pixel.json' one level up from .meteor
-if process.env.NODE_ENV is 'development'
+if Meteor.isDevelopment
   path = Npm.require 'path'
   fs = Npm.require 'fs'
 
@@ -69,6 +69,41 @@ if process.env.NODE_ENV is 'development'
   if newJSON != oldJSON
     console.warn 'Updating pixel.json! (Remember $ meteor --settings pixel.json)'
     fs.writeFileSync settingsFileName, newJSON
+
+
+# If we are missing --settings pixel.json, or failed to get
+# login credentials from pixel.json, we can throw this error
+#
+# Note that game-servers loads after game-server-shared, so we
+# must not throw this error this package is loading
+throwMissingSettingsError = (message)->
+
+  console.error message if message
+
+  console.error """
+  Always Run Pixel Aether servers with --settings pixel.json
+
+  pixel.json will be generated automatically the first time you
+  run your project in development mode.
+
+  You must specify an email and password in pixel.json. These
+  are the same credentials that you created you account on
+  www.pixelaether.com
+
+  # When you run a dev server:
+  $ meteor --settings pixel.json
+
+  # When you deploy to production:
+  $ meteor deploy YourAddress.com --settings pixel.json
+  """
+
+  throw new Error message or """
+  --- ERROR ---
+  You must run and deploy meteor with --settings pixel.json
+  You must specify email, password, and server name in pixel.json
+  --- ERROR ---
+  """
+
 
 
 # If we are starting our server, and we don't have our ID, 

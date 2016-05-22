@@ -16,7 +16,7 @@ Package.on_use(function(api){
     'underscore',
     'mongo',
     'ddp',
-    'game-servers-shared'
+    'game-servers'
   ]);
   api.export(['Rift', 'AetherRift']);
   api.addFiles(['Portal.js', 'Rift.js', 'AetherRift.js']);

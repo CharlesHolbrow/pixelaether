@@ -173,36 +173,3 @@ serverSelectorPattern = Match.OneOf String, {
   url: Match.Optional(String),
   _id: Match.Optional(String),
 }
-
-# If we are missing --settings pixel.json, or failed to get
-# login credentials from pixel.json, we can throw this error
-#
-# Note that game-servers loads after game-server-shared, so we
-# must not throw this error this package is loading
-if Meteor.isServer then throwMissingSettingsError = (message)->
-
-  console.error message if message
-
-  console.error """
-  Always Run Pixel Aether servers with --settings pixel.json
-
-  pixel.json will be generated automatically the first time you
-  run your project in development mode.
-
-  You must specify an email and password in pixel.json. These
-  are the same credentials that you created you account on
-  www.pixelaether.com
-
-  # When you run a dev server:
-  $ meteor --settings pixel.json
-
-  # When you deploy to production:
-  $ meteor deploy YourAddress.com --settings pixel.json
-  """
-
-  throw new Error message or """
-  --- ERROR ---
-  You must run and deploy meteor with --settings pixel.json
-  You must specify email, password, and server name in pixel.json
-  --- ERROR ---
-  """
