@@ -3,7 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.use(['mongo', 'dds-server', 'game-server-tilesets', 'urlz', 'deps', 'underscore', 'maps-shared', 'mongo', 'check'], 'server');
+  api.use(['mongo', 'dds-server', 'game-server-tilesets', 'urlz', 'deps', 'underscore', 'maps-isomorphic', 'mongo', 'check'], 'server');
   api.export(['MapDDS', 'Maps'], 'server');
   api.addFiles(['MapClass.js', 'MapDDS.js', 'publication.js', 'methods.js'], 'server');
 });

@@ -20,12 +20,12 @@ Package.onUse(function(api) {
 
   // isomorphic
   api.export(['serverSelectorPattern', 'GameServers'], ['server', 'client']);
-  api.addFiles('game-servers-shared.coffee');
+  api.addFiles('game-servers-isomorphic.coffee');
 
 });
 
 Package.onTest(function(api) {
   api.use('tinytest');
-  api.use('game-servers-shared');
-  api.addFiles('game-servers-shared-tests.js');
+  api.use('game-servers-isomorphic');
+  api.addFiles('game-servers-isomorphic-tests.js');
 });
