@@ -15,10 +15,10 @@ Package.onUse(function(api){
     'rift',
     'accounts-password',
     'ddp']);
-  
+
   api.imply([
     'accounts-password',
-    'maps-server',
+    'game-server-maps',
     'characters-server',
     'tilesets-server',
     'rift'

@@ -11,7 +11,7 @@ Package.onUse(function(api){
       'coffeescript',
       'mongo',
       'random',
-      'maps-server',
+      'game-server-maps',
       'game-servers',
       'rift'
     ],
