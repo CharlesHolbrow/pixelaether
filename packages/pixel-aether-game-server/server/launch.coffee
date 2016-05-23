@@ -1,3 +1,7 @@
+{ AetherUplink } = require './aether-uplink.coffee'
+require './game-server-accounts.coffee'
+
+
 masterUrl = Meteor.settings?.public?.MASTER_SERVER_URL
 email = Meteor.settings?.EMAIL
 password = Meteor.settings?.PASSWORD
@@ -18,7 +22,7 @@ AetherUplink.connection.onReconnect = ->
 try
   AetherUplink.createGameServer();
 catch err
-  console.log 'Error creating game server:', err
+  console.error 'Error creating game server:', err
 
 Tracker.autorun ->
   console.log 'AetherUplink status:', AetherUplink.connection.status().status

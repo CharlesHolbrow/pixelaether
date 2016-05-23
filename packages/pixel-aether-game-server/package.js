@@ -3,14 +3,26 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.use(['coffeescript', 'urlz', 'login-game-server', 'tracker']);
+  api.use(['coffeescript',
+    'urlz',
+    'tracker',
+    'underscore',
+    'meteor',
+    'ongoworks:ddp-login@0.2.1',
+    'es5-shim',
+    'ecmascript',
+    'game-servers',
+    'rift',
+    'accounts-password',
+    'ddp']);
+  
   api.imply([
     'accounts-password',
     'maps-server',
     'characters-server',
     'tilesets-server',
-    'login-game-server',
     'rift'
   ], 'server');
-  api.addFiles(['launch.coffee'], 'server')
+
+  api.mainModule('./server/launch.coffee', 'server');
 });

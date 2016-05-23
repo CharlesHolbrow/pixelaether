@@ -1,3 +1,14 @@
+# require 'meteor/ongoworks:ddp-login@0.2.1'
+
+{ Accounts }      = require 'meteor/accounts-base' # accounts-base in 'implied' by api.use('accounts-password')
+{ Random }        = require 'meteor/random'
+{ check }         = require 'meteor/check'
+{ _ }             = require 'meteor/underscore'
+{ GameServers }   = require 'meteor/game-servers'
+{ DDP }           = require 'meteor/ddp'
+{ AetherUplink }  = require './aether-uplink.coffee'
+
+
 Meteor.methods
 
   # The Client calls this method when she wants to login, but

@@ -15,6 +15,12 @@ When we start this Game Server, we instantiate a Login object
 with our url
 
 ###
+# require 'meteor/ongoworks:ddp-login@0.2.1'
+
+{ GameServers } = require 'meteor/game-servers'
+{ Rift }        = require 'meteor/rift'
+{ DDP }         = require 'meteor/ddp'
+{ urlz }        = require 'meteor/urlz'
 
 serverNamePattern = /^[a-z][a-z0-9\-_ ]{1,62}[a-z0-9](DEV)?$/
 serverNameDescription = """
@@ -64,4 +70,4 @@ class Uplink
 
 # This will be our connection to the main server
 # The game server must .connect to www.pixelaether.com
-AetherUplink = new Uplink
+exports.AetherUplink = AetherUplink = new Uplink
