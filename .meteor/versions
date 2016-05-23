@@ -42,7 +42,6 @@ launch-screen@1.0.11
 livedata@1.0.18
 localstorage@1.0.9
 logging@1.0.12
-login-game-server@1.0.0
 maps-server@0.0.0
 maps-shared@0.0.0
 meteor@1.1.14
