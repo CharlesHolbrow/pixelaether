@@ -33,7 +33,8 @@ if Meteor.isDevelopment
   unless id
     throw new Meteor.Error 'Failed to extract id value from .id'
 
-  isMasterServer = Meteor.isServer and not Meteor.settings?.public?.MASTER_SERVER_URL?.length
+  serverName = Meteor.settings?.public?.SERVER_NAME
+  isMasterServer = Meteor.isServer and serverName == 'master'
   # We want server IDs to depend on the app ID. But we do not
   # need app IDs to be publicly visible, so we take 6 characters
   # from the app id (which is 19 characters long) and 10
