@@ -15,7 +15,6 @@ When we start this Game Server, we instantiate a Login object
 with our url
 
 ###
-# require 'meteor/ongoworks:ddp-login@0.2.1'
 
 { GameServers } = require 'meteor/game-servers'
 { Rift }        = require 'meteor/rift'

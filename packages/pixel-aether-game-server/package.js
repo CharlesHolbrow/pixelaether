@@ -19,8 +19,8 @@ Package.onUse(function(api){
   api.imply([
     'accounts-password',
     'game-server-maps',
-    'characters-server',
-    'tilesets-server',
+    'game-server-characters',
+    'game-server-tilesets',
     'rift'
   ], 'server');
 
