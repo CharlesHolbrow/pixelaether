@@ -25,7 +25,6 @@ exampleData = {
 
 TilesetClass = function(serverId, name){
   // generic, for all objects
-  this.incomplete = true;
   this.serverId = serverId;
   this.name = name;
 

@@ -14,7 +14,7 @@ Package.onUse(function(api) {
   api.versionsFrom('1.3.2.4');
   api.addAssets('img/elements9x3.png', ['client', 'server']);
   api.use(['ecmascript', 'game-server-tilesets'], 'server');
-  api.mainModule('tileset-elements.js');
+  api.mainModule('tileset-elements.js', 'server');
 });
 
 Package.onTest(function(api) {

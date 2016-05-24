@@ -20,7 +20,7 @@ Package.onUse(function(api) {
   // we have to imply the tileset dependency so that the tileset
   // image will be accessible via url.
   api.imply('tileset-elements', ['server', 'client']);
-  api.mainModule('map-forest.js');
+  api.mainModule('map-forest.js', 'server');
 });
 
 Package.onTest(function(api) {

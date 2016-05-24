@@ -15,7 +15,7 @@ Package.onUse(function(api) {
   api.use('ecmascript');
   api.use(['ecmascript', 'game-server-tilesets'], 'server');
   api.addAssets('img/characters5x1.png', ['client', 'server']);
-  api.mainModule('tileset-characters.js');
+  api.mainModule('tileset-characters.js', 'server');
 });
 
 Package.onTest(function(api) {
