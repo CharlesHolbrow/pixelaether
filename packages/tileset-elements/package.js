@@ -1,4 +1,5 @@
 Package.describe({
+  name: 'tileset-elements',
   version: '0.0.1',
   // Brief, one-line summary of the package.
   summary: '',
@@ -11,21 +12,14 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.3.2.4');
-  api.use('ecmascript');
-
-  // We have to use the tileset dependency so that we gaurantee
-  // that we call TilesetDDS.add() before calling MapDDS.add()
-  api.use(['tileset-elements', 'game-server-maps'], 'server');
-
-  // we have to imply the tileset dependency so that the tileset
-  // image will be accessible via url.
-  api.imply('tileset-elements', ['server', 'client']);
-  api.mainModule('map-forest.js');
+  api.addAssets('img/elements9x3.png', ['client', 'server']);
+  api.use(['ecmascript', 'game-server-tilesets'], 'server');
+  api.mainModule('tileset-elements.js');
 });
 
 Package.onTest(function(api) {
   api.use('ecmascript');
   api.use('tinytest');
-  api.use('map-forest');
-  api.mainModule('map-forest-tests.js');
+  api.use('tileset-elements');
+  api.mainModule('tileset-elements-tests.js');
 });
