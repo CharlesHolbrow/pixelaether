@@ -156,7 +156,8 @@ GameServers.findOneForUser = (selector, userId)->
   # Another option would be checking every single user Document
   # which would just be one mongodb call -- however, I have not
   # yet thought through the security implications.
-  return if isMasterServer and not userId
+  if isMasterServer and not userId
+    throw new Error 'On the master server GameServers.findOneForUser requires a userId as the second argument'
 
   userId ?= GameServers.masterServerConnection.userId()
   return unless userId

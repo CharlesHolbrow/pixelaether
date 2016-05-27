@@ -15,23 +15,38 @@
 # We get the last .meteor in the path, and:
 # 1. Assume that .meteor/.id exists
 # 2. Assume we can write 'pixel.json' one level up from .meteor
-if Meteor.isDevelopment
-  path = Npm.require 'path'
-  fs = Npm.require 'fs'
+#
+# In "meteor test" and "meteor test --full-app" neither
+# __meteor_runtime_config__ or the normal .meteor/.id is
+# available. For testing, we must first run the app in dev mode
+# so that pixel.json will be generated. Then we test with
+# --settings pixel.json
+if Meteor.isDevelopment and not (Meteor.isTest or Meteor.isAppTest)
 
-  cwd = process.cwd()
-  meteorPath = cwd.match(/.*\.meteor/)?[0] # dot star is greedy
-  unless meteorPath
-    throw new Meteor.Error 'Cannot find .meteor in: ' + cwd
-  idPath = path.join meteorPath, '.id'
-  try
-    file = fs.readFileSync idPath, 'utf8'
-  catch err
-    throw new Meteor.Error 'Failed to open: ' + idPath
-  # get the id and trim any whitespace
-  id = file.match(/^([^#\s]{10,})[\s]*$/m)?[1]
+  # First Try to get the app id from __meteor_runtime_config__
+  # __meteor_runtime_config__ is not available during testing mode
+  id = __meteor_runtime_config__?.appId
+
+  # If necessary, try reading appId from the .meteor/.id file
+  if !id
+    path = Npm.require 'path'
+    fs = Npm.require 'fs'
+
+    cwd = process.cwd()
+    meteorPath = cwd.match(/.*\.meteor/)?[0] # dot star is greedy
+    unless meteorPath
+      throw new Meteor.Error 'Cannot find .meteor in: ' + cwd
+    idPath = path.join meteorPath, '.id'
+    try
+      file = fs.readFileSync idPath, 'utf8'
+    catch err
+      throw new Meteor.Error 'Failed to open: ' + idPath
+    # get the id and trim any whitespace
+    id = file.match(/^([^#\s]{10,})[\s]*$/m)?[1]
+
+  # throw if all our attempts to get the appId failed
   unless id
-    throw new Meteor.Error 'Failed to extract id value from .id'
+    throw new Meteor.Error 'Failed to extract the meteor appId'
 
   serverName = Meteor.settings?.public?.SERVER_NAME
   isMasterServer = Meteor.isServer and serverName == 'master'
@@ -93,6 +108,9 @@ throwMissingSettingsError = (message)->
 
   # When you run a dev server:
   $ meteor --settings pixel.json
+
+  # when you test a dev server
+  $ meteor test --driver-package practicalmeteor:mocha --settings pixel.json -p 3100
 
   # When you deploy to production:
   $ meteor deploy YourAddress.com --settings pixel.json

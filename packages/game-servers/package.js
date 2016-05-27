@@ -23,9 +23,3 @@ Package.onUse(function(api) {
   api.addFiles('game-servers-isomorphic.coffee');
 
 });
-
-Package.onTest(function(api) {
-  api.use('tinytest');
-  api.use('game-servers-isomorphic');
-  api.addFiles('game-servers-isomorphic-tests.js');
-});
