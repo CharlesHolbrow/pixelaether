@@ -32,19 +32,13 @@ MapClass = function(serverId, name){
 };
 
 /*------------------------------------------------------------
-activateCharacter
 checkCharacter
 checkCtxy
-deactivateCharacter
 moveCharacterTo
 query
 setTile
 throw
 ------------------------------------------------------------*/
-MapClass.prototype.activateCharacter = function(selector){
-  this.characters.update(selector, {$set:{active:true}});
-};
-
 // return a character document or throw an error
 MapClass.prototype.checkCharacter = function(selector){
   // make sure that the character exists on map named mapName
@@ -65,10 +59,6 @@ MapClass.prototype.checkCtxy = function(ctxy){
   if (ctxy.ty >= this.chunkHeight || ctxy.ty < 0)
     this.throw('y out of bounds');
   return ctxy;
-};
-
-MapClass.prototype.deactivateCharacter = function(selector){
-  this.characters.update(selector, {$set:{active:false}});
 };
 
 MapClass.prototype.moveCharacterTo = function(selector, ctxy){
