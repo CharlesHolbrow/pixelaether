@@ -3,7 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.use('check');
+  api.use(['check', 'ecmascript', 'es5-shim']);
   api.export('MapClass');
   api.addFiles(['MapClass.js']);
 });

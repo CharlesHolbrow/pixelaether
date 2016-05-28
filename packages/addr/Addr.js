@@ -12,10 +12,6 @@ Addr = function(addr){
   this.ty = addr.ty || 0;
   this.cx = addr.cx || 0;
   this.cy = addr.cy || 0;
-
-  // Unsure if it's a good idea to cache these.
-  this._tileset = null;
-  this._map = null;
 };
 
 /*------------------------------------------------------------
@@ -36,9 +32,6 @@ copyTo: function(target){
 },
 
 resolve: function(map, tileset){
-
-  map = map || this._map;
-  tileset = tileset || this._tileset;
 
   if (tileset){
     this._tileset = tileset;
@@ -80,7 +73,6 @@ move: function(amount){
   if (amount.py) this.py += amount.py;
   if (amount.cx) this.cx += amount.cx;
   if (amount.cy) this.cy += amount.cy;
-  this.resolve();
 },
 
 set: function(coords){

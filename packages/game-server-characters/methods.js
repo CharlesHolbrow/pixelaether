@@ -12,16 +12,36 @@ var characterPattern = Match.ObjectIncluding({_id:Match.Any});
 
 Meteor.methods({
 
+moveCharacter: function(charId, direction){
+  check(charId, String);
+  check(direction, String);
+
+  // Verify user is logged in
+  if (!this.userId)
+    throw new Meteor.Error('Anonymous user tried to call moveCharacter method');
+
+  // Verify the user owns the character
+  var mainChar = Characters.findOne({ownerId:this.userId, _id:charId});
+  if (!mainChar)
+    throw new Meteor.Error('User tried to move character she does not own');
+
+  var mapName = mainChar.mapName;
+  var map = MapDDS.get(mapName);
+
+  map.moveCharacter(charId, direction);
+},
+
+
 moveCharacterTo: function(mapChar, ctxy) {
   check(mapChar, characterPattern);
   check(ctxy, ctxyPattern); // also checked inside map.moveCharacterTo
 
   // verify user is logged in
   if (!this.userId)
-    throw new Meteor.Error('Anonymous user tried to call moveCharacterTo method')
+    throw new Meteor.Error('Anonymous user tried to call moveCharacterTo method');
 
   // verify the user owns the character
-  var mainChar = Characters.findOne({ownerId:this.userId, _id:mapChar._id})
+  var mainChar = Characters.findOne({ownerId:this.userId, _id:mapChar._id});
   if (!mainChar)
     throw new Meteor.Error('User tried to move character she does not own');
 

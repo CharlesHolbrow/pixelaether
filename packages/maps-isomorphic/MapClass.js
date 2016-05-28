@@ -8,6 +8,9 @@ These methods are responsible for verifying valid inputs, BUT
 Server side Meteor methods are responsible for verifying a
 user is allowed to call these
 ------------------------------------------------------------*/
+
+import { Addr } from 'meteor/addr';
+
 MapClass = function(serverId, name){
   // all dds types must do this
   this.name = name;
@@ -34,6 +37,7 @@ MapClass = function(serverId, name){
 /*------------------------------------------------------------
 checkCharacter
 checkCtxy
+moveCharacter
 moveCharacterTo
 query
 setTile
@@ -59,6 +63,38 @@ MapClass.prototype.checkCtxy = function(ctxy){
   if (ctxy.ty >= this.chunkHeight || ctxy.ty < 0)
     this.throw('y out of bounds');
   return ctxy;
+};
+
+MapClass.prototype.moveCharacter = function(selector, direction) {
+  if (this.incomplete)
+    this.throw('Cannot moveCharacter on an incomplete map.');
+  if (typeof direction !== 'string')
+    this.throw('Cannot moveCharacter - direction must ba a string');
+  var currentPosition = this.characters.findOne(selector);
+
+  var targetAddr = new Addr(currentPosition);
+  direction = direction.toLowerCase();
+
+  if (direction === 'n'){
+    targetAddr.ty += 1;
+  } else if (direction === 'e'){
+    targetAddr.tx += 1;
+  } else if (direction === 's'){
+    targetAddr.ty -= 1;
+  } else if (direction === 'w'){
+    targetAddr.tx -= 1;
+  } else {
+    this.throw('Cannot moveCharacter - invalid direction');
+  }
+
+  targetAddr.resolve(this);
+  var setSelector = {};
+  if (targetAddr.tx !== currentPosition.tx) setSelector.tx = targetAddr.tx;
+  if (targetAddr.ty !== currentPosition.ty) setSelector.ty = targetAddr.ty;
+  if (targetAddr.cx !== currentPosition.cx) setSelector.cx = targetAddr.cx;
+  if (targetAddr.ty !== currentPosition.ty) setSelector.ty = targetAddr.ty;
+
+  this.characters.update(selector, {$set:setSelector});
 };
 
 MapClass.prototype.moveCharacterTo = function(selector, ctxy){

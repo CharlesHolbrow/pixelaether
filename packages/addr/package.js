@@ -3,6 +3,6 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.export('Addr', ['client']);
-  api.addFiles('client/Addr.js', 'client');
+  api.export('Addr', ['client', 'server']);
+  api.addFiles('Addr.js', ['client', 'server']);
 });
