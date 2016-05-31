@@ -79,6 +79,17 @@ MapClass.prototype.checkCtxy = function(ctxy){
   return ctxy;
 };
 
+// this is a very hacky way to check if there is an obstruction
+MapClass.prototype.isObstructed = function(ctxy){
+  var results = this.query(ctxy);
+  for (var i = 0; i < results.length; i++){
+    var obj = results[i];
+    if (obj === 1 || obj === 17 || (typeof obj === 'object' && obj._id))
+      return obj; //1=tree,  17=wall, object=character
+  }
+  return false;
+};
+
 MapClass.prototype.moveCharacterTo = function(selector, ctxy){
   this.checkCtxy(ctxy);
   this.characters.update(selector, {$set:{cx:ctxy.cx, cy:ctxy.cy, tx:ctxy.tx, ty:ctxy.ty}});
