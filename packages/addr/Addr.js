@@ -34,7 +34,6 @@ copyTo: function(target){
 resolve: function(map, tileset){
 
   if (tileset){
-    this._tileset = tileset;
     var tileWidth = tileset.tileWidth;
     var tileHeight = tileset.tileHeight;
     var halfWidth = Math.floor(tileWidth * 0.5);
@@ -52,15 +51,14 @@ resolve: function(map, tileset){
   }
 
   if (map){
-    this._map = map;
     var cxDiff = Math.floor(this.tx / map.chunkWidth);
     var cyDiff = Math.floor(this.ty / map.chunkHeight);
     this.cx += cxDiff;
     this.cy += cyDiff;
 
     // a little more complex than we like, because mode % is not what we want for negative values: (-1 % 8) != 7
-    this.tx = (cxDiff >= 0) ? this.tx % (this._map.chunkWidth) : (this.tx + this._map.chunkWidth  * cxDiff * -1) % this._map.chunkWidth;
-    this.ty = (cyDiff >= 0) ? this.ty % (this._map.chunkHeight): (this.ty + this._map.chunkHeight * cyDiff * -1) % this._map.chunkHeight;
+    this.tx = (cxDiff >= 0) ? this.tx % (map.chunkWidth) : (this.tx + map.chunkWidth  * cxDiff * -1) % map.chunkWidth;
+    this.ty = (cyDiff >= 0) ? this.ty % (map.chunkHeight): (this.ty + map.chunkHeight * cyDiff * -1) % map.chunkHeight;
   }
 
   return this;

@@ -34,6 +34,20 @@ MapClass = function(serverId, name){
   this.customize();
 };
 
+
+// Match an object where any of cx, cy, tx, ty are either not
+// present, or are integers.
+var ctxyPattern = Match.Where(function(input){
+  var ctxy = _.pick(input, 'cx', 'cy', 'tx', 'ty');
+  return Match.test(ctxy, {
+    cx: Match.Integer,
+    cy: Match.Integer,
+    tx: Match.Integer,
+    ty: Match.Integer
+  });
+});
+
+
 /*------------------------------------------------------------
 checkCharacter
 checkCtxy
@@ -63,38 +77,6 @@ MapClass.prototype.checkCtxy = function(ctxy){
   if (ctxy.ty >= this.chunkHeight || ctxy.ty < 0)
     this.throw('y out of bounds');
   return ctxy;
-};
-
-MapClass.prototype.moveCharacter = function(selector, direction) {
-  if (this.incomplete)
-    this.throw('Cannot moveCharacter on an incomplete map.');
-  if (typeof direction !== 'string')
-    this.throw('Cannot moveCharacter - direction must ba a string');
-  var currentPosition = this.characters.findOne(selector);
-
-  var targetAddr = new Addr(currentPosition);
-  direction = direction.toLowerCase();
-
-  if (direction === 'n'){
-    targetAddr.ty += 1;
-  } else if (direction === 'e'){
-    targetAddr.tx += 1;
-  } else if (direction === 's'){
-    targetAddr.ty -= 1;
-  } else if (direction === 'w'){
-    targetAddr.tx -= 1;
-  } else {
-    this.throw('Cannot moveCharacter - invalid direction');
-  }
-
-  targetAddr.resolve(this);
-  var setSelector = {};
-  if (targetAddr.tx !== currentPosition.tx) setSelector.tx = targetAddr.tx;
-  if (targetAddr.ty !== currentPosition.ty) setSelector.ty = targetAddr.ty;
-  if (targetAddr.cx !== currentPosition.cx) setSelector.cx = targetAddr.cx;
-  if (targetAddr.ty !== currentPosition.ty) setSelector.ty = targetAddr.ty;
-
-  this.characters.update(selector, {$set:setSelector});
 };
 
 MapClass.prototype.moveCharacterTo = function(selector, ctxy){
@@ -152,13 +134,3 @@ MapClass.prototype.setTile = function (ctxy, i, layerName) {
 MapClass.prototype.throw = function(reason){
   throw new Meteor.Error(this.name + ' Map Error: ' + (reason || 'Unknown Error'));
 };
-
-var ctxyPattern = Match.Where(function(input){
-  var ctxy = _.pick(input, 'cx', 'cy', 'tx', 'ty');
-  return Match.test(ctxy, {
-    cx: Match.Integer,
-    cy: Match.Integer,
-    tx: Match.Integer,
-    ty: Match.Integer
-  });
-});
