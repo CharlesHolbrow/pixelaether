@@ -118,6 +118,7 @@ DDS.prototype.add = function(object){
 
   // Link objects.  
   for (let key in newObj){
+    if (!newObj.hasOwnProperty(key)) continue;
     if (!key.endsWith('Name')) continue;
     var typeName = key.slice(0, key.length - 4);
     if (typeof newObj[key] !== 'string') continue;
