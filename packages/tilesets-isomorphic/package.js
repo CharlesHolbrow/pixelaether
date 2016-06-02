@@ -3,6 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api){
+  api.use(['ecmascript', 'es5-shim']);
   api.export(['TilesetClass']);
   api.addFiles('TilesetClass.js');
 });

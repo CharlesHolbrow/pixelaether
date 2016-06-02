@@ -36,6 +36,8 @@ TilesetClass = function(serverId, name){
   this.tileHeight = 0;
   this.cellWidth = 0;
   this.cellHeight = 0;
+  this.tileProperties = {};
+  this.tileNames = {};
 };
 
 TilesetClass.prototype = {
@@ -45,5 +47,71 @@ TilesetClass.prototype = {
 
   getUpperLeftY: function(i) {
     return (Math.floor((i-1) / this.width) * this.cellHeight) + 1;
+  },
+
+
+  init: function(obj){
+    // Copy over the properties from tileNames. This will run on
+    // the server, and update the name property, causing the
+    // this.tileProperty.name array to be sent to the client
+    // with the initila payload. Notice that we use null for
+    // nameless values, and not undefined. Note that there is an
+    // edge-case with JSON.stringify.
+    //
+    // If we JSON.stringify([undefined]) we get '[null]'. The
+    // result of this is that if we send an array with
+    // undefined to the client it unserializes to 'null'.
+    //
+    // In the current implementation we the name property is run
+    // inside the init method on the server, and then it is sent
+    // to the client. When the init method runs on the client,
+    // the init method does not need to overwrite name property.
+
+    if (this.tileProperties.name) return;
+    if (typeof this.tileNames === 'object'){
+      let names = new Array(this.height * this.width);
+      // For so
+      names.fill(null);
+
+      for (let name in this.tileNames){
+        let numOrArray = this.tileNames[name];
+        if (typeof numOrArray === 'number')
+          names[numOrArray-1] = name;
+        else {
+          // assume array
+          numOrArray.forEach((num)=>{names[num-1] = name;}, this);
+        }
+      }
+
+      // Array.fill(undefined) doesn't work
+      this.tileProperties.name = names;
+    }
+  },
+
+  // we can use a tile index OR a tilename for i
+  prop: function(indexOrName, propertyName){
+    var i;
+    if (this.incomplete) return undefined;
+
+    var properties = this.tileProperties[propertyName];
+    if (!properties) return undefined;
+
+    if (typeof indexOrName === 'string'){
+
+      i = this.tileNames[indexOrName];
+      if (i === undefined)
+        throw new Error('No tile named ' + indexOrName);
+
+      // if the result is not a number, assume array
+      if (typeof i !== 'number')
+        i = i[0];
+
+    } else {
+      // assume index
+      i = indexOrName;
+    }
+
+    return properties[i-1];
   }
+
 };
