@@ -81,13 +81,17 @@ MapClass.prototype.checkCtxy = function(ctxy){
 
 // this is a very hacky way to check if there is an obstruction
 MapClass.prototype.isObstructed = function(ctxy){
-  var results = this.query(ctxy);
-  for (var i = 0; i < results.length; i++){
-    var obj = results[i];
-    if (obj === 1 || obj === 17 || (typeof obj === 'object' && obj._id))
-      return obj; //1=tree,  17=wall, object=character
-  }
-  return false;
+  if (this.incomplete) return undefined; // consider console.warn?
+  this.checkCtxy(ctxy);
+
+  const tiles = this._queryChunks(ctxy).filter((val)=>{
+    return this.tileset.prop(val, 'obstructed');
+  }, this);
+
+  const characters = this._queryCharacters(ctxy);
+  const obstacles = tiles.concat(characters);
+
+  return (obstacles.length) ? obstacles : false;
 };
 
 MapClass.prototype.moveCharacterTo = function(selector, ctxy){
@@ -97,33 +101,44 @@ MapClass.prototype.moveCharacterTo = function(selector, ctxy){
 
 MapClass.prototype.query = function(ctxy){
   // should map methods take an addr?
-  // doing so would allow us to ._resolve them,
-  // but doing so would create a circular dependency
-  // i.e. ._resolve would add this map to the addr
-  results = [];
-  if (this.incomplete) return results;
+  if (this.incomplete) return [];
   this.checkCtxy(ctxy);
 
-  var chunk = this.chunks.findOne({cx: ctxy.cx, cy:ctxy.cy});
-  var index = ctxy.ty * this.chunkWidth + ctxy.tx;
-
-  // get the tiles from the map
-  if (!chunk) return results;
-  for (var i = 0; i < chunk.layerNames.length; i++){
-    var value = chunk[chunk.layerNames[i]][index];
-    if (typeof value !== 'undefined')
-      results.push(value);
-  }
+  const results = this._queryChunks(ctxy);
 
   // and get all the characters
-  var chars = this.characters.find(
+  var chars = this._queryCharacters(ctxy);
+
+  return results.concat(chars);
+};
+
+// protected by an underscore, because input is not checked
+MapClass.prototype._queryCharacters = function(ctxy){
+  return this.characters.find(
     {cx:ctxy.cx, cy:ctxy.cy, tx:ctxy.tx, ty:ctxy.ty}
   ).fetch();
-  for (var j = 0; j < chars.length; j++){
-    results.push(chars[j]);
-  }
+};
 
+// protected by an underscore, because input is not checked
+// for now I'm not going to include any zeros. in the results
+MapClass.prototype._queryChunks = function(ctxy){
+  const results = [];
+  const chunk = this.chunks.findOne({cx: ctxy.cx, cy:ctxy.cy});
+  const index = ctxy.ty * this.chunkWidth + ctxy.tx;
+
+  if (!chunk) return results;
+
+  // get the layer names
+  for (let i = 0; i < chunk.layerNames.length; i++){
+    let val = chunk[chunk.layerNames[i]][index];
+    if (val) results.push(val); // don't push zeros
+  }
   return results;
+};
+
+MapClass.prototype.queryNames = function(ctxy){
+  const results = this.query(ctxy);
+  return this.tileset.indicesToNames(results);
 };
 
 MapClass.prototype.setTile = function (ctxy, i, layerName) {

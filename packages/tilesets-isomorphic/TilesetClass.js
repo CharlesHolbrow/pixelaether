@@ -8,7 +8,6 @@ Tile indexes start at 1 in the upper leftmost tile:
 
 TilesetClass is designed to be a DDS objects, so it constrains
 to certain limitations - EX:
-- constructor sets incomplete = true
 - .init method populates properties
 
 exampleData = {
@@ -49,7 +48,6 @@ TilesetClass.prototype = {
     return (Math.floor((i-1) / this.width) * this.cellHeight) + 1;
   },
 
-
   init: function(obj){
     // Copy over the properties from tileNames. This will run on
     // the server, and update the name property, causing the
@@ -88,6 +86,20 @@ TilesetClass.prototype = {
     }
   },
 
+  indicesToNames: function(indices){
+    return indices.map(this.indexToName, this);
+  },
+
+  // Note that this method passes anything that is not a number
+  // unmodified. This lets us pass arrays to indicesToNames that
+  // contain objects. One use case is passing in results from
+  // MapClass.prototype.isObstructed(ctxy)
+  indexToName: function(index){
+    if (typeof index !== 'number') return index;
+    const name = this.prop(index, 'name');
+    return (name) ? name : index;
+  },
+
   // we can use a tile index OR a tilename for i
   prop: function(indexOrName, propertyName){
     var i;
@@ -111,6 +123,9 @@ TilesetClass.prototype = {
       i = indexOrName;
     }
 
+    // notice that the indecies of the arrays must be offset by
+    // -1 because the tileset is indexed from 1 while the arrays
+    // are indexed from 0.
     return properties[i-1];
   }
 
