@@ -1,30 +1,33 @@
 // DDS
-var instances = {};
-var namePattern = /^[a-zA-Z]*$/;
-var rawData = {};
-var absoluteUrl = Meteor.absoluteUrl();
+const instances = {};
+const namePattern = /^[a-zA-Z]*$/;
+const rawData = {};
+const absoluteUrl = Meteor.absoluteUrl();
 
 
 Meteor.methods({
-  'dds-get-array': function(type){
+
+  'dds-get-array'(type) {
     check(type, String);
-    if (!instances.hasOwnProperty(type)){
-      var error = new Meteor.Error(404, 'client requests non existent dds type: ' + type );
+    if (!instances.hasOwnProperty(type)) {
+      const error = new Meteor.Error(404, `client requests non existent dds type:  ${type}`);
       throw error;
     }
     return instances[type].all;
   },
-  'dds-get-dict': function(type){
+
+  'dds-get-dict'(type) {
     check(type, String);
-    if (!instances.hasOwnProperty(type)){
-      var error = new Meteor.Error(404, 'client requests non existent dds type: ' + type );
+    if (!instances.hasOwnProperty(type)) {
+      const error = new Meteor.Error(404, `client requests non existent dds type: ${type}`);
       throw error;
     }
     return instances[type].content;
   },
-  'dds-get-all': function(){
+
+  'dds-get-all'() {
     return rawData;
-  }
+  },
 });
 
 
@@ -61,35 +64,35 @@ DDS = function(name, psuedoClass){
   rawData[name] = self.content;
 };
 
-DDS.getObject = function(typeName, name){
-  var ddsInstance = instances[typeName];
+DDS.getObject = function(typeName, name) {
+  const ddsInstance = instances[typeName];
   if (!ddsInstance)
     return undefined;
-  var objects = ddsInstance.objects;
+  const objects = ddsInstance.objects;
   if (!objects.hasOwnProperty(name))
     return undefined;
   return objects[name];
 };
 
-DDS.prototype.add = function(object){
-  if (!object.name){
+DDS.prototype.add = function(object) {
+  if (!object.name) {
     throw new Error('DDS objects must have a .name');
   }
-  if (object.hasOwnProperty('incomplete')){
+  if (object.hasOwnProperty('incomplete')) {
     throw new Error('.incomplete is an illegal key for DDS objects');
   }
-  if (typeof this.content[object.name] !== 'undefined'){
-    throw new Error(this.name + ' DDS object already exists named:' + object.name);
+  if (typeof this.content[object.name] !== 'undefined') {
+    throw new Error(`${this.name} DDS object already exists named: ${object.name}`);
   }
 
   // we modify the objects before caching them
-  for (let key in object){
+  for (let key in object) {
     // check if object has a relativeUrl
     if (
       key.endsWith('Url') &&
       typeof object[key] === 'string' &&
       urlz.isRelative(object[key])
-    ){
+    ) {
       object[key] = urlz.clean(absoluteUrl + '/' + object[key]);
     }
   }
@@ -107,24 +110,24 @@ DDS.prototype.add = function(object){
 
   // Copy over properties from the object passed to the add
   // method (including the _id)
-  for (let key in object){ newObj[key] = object[key]; }
+  for (let key in object) { newObj[key] = object[key]; }
 
   // Note that when calling init on the server side, we do not
   // wrap the call in try/catch. On the server, we provide our
   // own data, so we can trust it
-  if (typeof newObj.init === 'function'){
+  if (typeof newObj.init === 'function') {
     newObj.init(object);
   }
 
-  // Link objects.  
+  // Link objects.
   for (let key in newObj){
     if (!newObj.hasOwnProperty(key)) continue;
     if (!key.endsWith('Name')) continue;
-    var typeName = key.slice(0, key.length - 4);
+    const typeName = key.slice(0, key.length - 4);
     if (typeof newObj[key] !== 'string') continue;
-    var otherObject = DDS.getObject(typeName, newObj[key]);
+    const otherObject = DDS.getObject(typeName, newObj[key]);
     if (!otherObject)
-      throw new Error('Failed to Link DDS Object: ' + JSON.stringify(newObj));
+      throw new Error(`Failed to Link DDS Object: ${JSON.stringify(newObj)}`);
     newObj[typeName] = otherObject;
   }
   newObj.incomplete = false;
