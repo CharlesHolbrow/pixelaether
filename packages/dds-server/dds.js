@@ -31,13 +31,13 @@ Meteor.methods({
 });
 
 
-DDS = function(name, psuedoClass){
-  var self = this;
+DDS = function(name, psuedoClass) {
+  const self = this;
 
-  if (!namePattern.test(name)){
+  if (!namePattern.test(name)) {
     throw new Error('DDS name must begin with a letter, and contain only letters, numbers, - _');
   }
-  if (typeof psuedoClass !== 'function'){
+  if (typeof psuedoClass !== 'function') {
     throw new Error('DDS requires a class constructor');
   }
 
@@ -55,10 +55,15 @@ DDS = function(name, psuedoClass){
   self._class = psuedoClass;
 
   // Construct
-  self.name = name;
-  self.content = {}; // each element is a js object to be de-serialized ("objectified") by our clients
-  self.all = [];
-  self.objects = {}; // each element is an instance of psuedoClass
+  self.name     = name;
+
+  // each element is a js object to be de-serialized (a.k.a.
+  // objectified) by our clients
+  self.content  = {};
+
+  // each element is an instance of psuedoClass
+  self.objects  = {};
+  self.all      = [];
 
   // Store Raw Data
   rawData[name] = self.content;
@@ -86,16 +91,16 @@ DDS.prototype.add = function(object) {
   }
 
   // we modify the objects before caching them
-  for (let key in object) {
+  Object.keys(object).forEach((key) => {
     // check if object has a relativeUrl
     if (
       key.endsWith('Url') &&
       typeof object[key] === 'string' &&
       urlz.isRelative(object[key])
     ) {
-      object[key] = urlz.clean(absoluteUrl + '/' + object[key]);
+      object[key] = urlz.clean(`${absoluteUrl}/${object[key]}`);
     }
-  }
+  });
 
   object._id = GameServers.newId(object.name);
 
@@ -103,14 +108,14 @@ DDS.prototype.add = function(object) {
   this.content[object.name] = object;
   // Empty the 'all' array, and fill it again
   this.all = [];
-  for (let key in this.content)
+  for (const key of Object.keys(this.content))
     this.all.push(this.content[key]);
 
-  var newObj = new this._class(absoluteUrl, object.name);
+  const newObj = new this._class(absoluteUrl, object.name);
 
   // Copy over properties from the object passed to the add
   // method (including the _id)
-  for (let key in object) { newObj[key] = object[key]; }
+  Object.assign(newObj, object);
 
   // Note that when calling init on the server side, we do not
   // wrap the call in try/catch. On the server, we provide our
@@ -120,7 +125,7 @@ DDS.prototype.add = function(object) {
   }
 
   // Link objects.
-  for (let key in newObj){
+  for (const key of Object.keys(newObj)) {
     if (!newObj.hasOwnProperty(key)) continue;
     if (!key.endsWith('Name')) continue;
     const typeName = key.slice(0, key.length - 4);
@@ -136,6 +141,6 @@ DDS.prototype.add = function(object) {
   return newObj;
 };
 
-DDS.prototype.get = function(name){
+DDS.prototype.get = function(name) {
   return this.objects[name];
 };

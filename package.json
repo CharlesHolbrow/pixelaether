@@ -49,9 +49,7 @@
       "no-undef": "off",
       "curly": "off",
       "no-console": "off",
-      "padded-blocks": "off",
-      "guard-for-in": "off",
-      "no-parap-reassign": "off"
+      "padded-blocks": "off"
     }
   }
 
