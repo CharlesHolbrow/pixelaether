@@ -30,6 +30,11 @@ moveCharacterTo: function(mapChar, ctpxy) {
   if (!ctpxy.mapName || ctpxy.mapName === mainChar.mapName) {
     // We can stay on the current map
     var map = Maps.getMap(mainChar.mapName);
+
+    var obstacles = map.isObstructed(ctpxy);
+    if (obstacles)
+      throw new Meteor.Error('Position obstructed');
+
     map.moveCharacterTo(mainChar._id, ctpxy);
   }
   else
