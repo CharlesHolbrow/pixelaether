@@ -64,10 +64,10 @@ GameServers.promiseOneForUser = function(serverId, userId) {
       }
     });
 
-    // Give up after 7 seconds
+    // Give up after the timeout
     Meteor.setTimeout(() => {
       computation.stop();
-      reject(new Error('timeout'));
-    }, 7000);
+      resolve(null);
+    }, 5000);
   });
 };

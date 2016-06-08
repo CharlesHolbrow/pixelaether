@@ -1,4 +1,3 @@
-// Import and rename a variable exported by location.js.
 import { chai } from 'meteor/practicalmeteor:chai';
 import { Loc }  from 'meteor/location';
 

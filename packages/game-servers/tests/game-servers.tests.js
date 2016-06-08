@@ -57,7 +57,20 @@ const testUser2 = {
 
 describe('GameServers', function(){
 
-  describe('promiseOneForUser', function(){
+  const serverName =  Meteor.settings &&
+                      Meteor.settings.public &&
+                      Meteor.settings.public.SERVER_NAME;
+
+  console.log(`testing game-servers on ${serverName}`)
+
+  it('exists', function(){
+    expect(GameServers).to.exist;
+  });
+
+
+  describe('.promiseOneForUser', function(){
+    this.timeout(15000);
+
     beforeEach(function(){
       StubCollections.stub([GameServers, Meteor.users]);
     });
@@ -66,12 +79,68 @@ describe('GameServers', function(){
       StubCollections.restore();
     });
 
-    it('Possible to retrieve a test user', function(){
+    it('is possible to retrieve a test user', function(){
       Meteor.users.insert(testUser1);
       const user = Meteor.users.findOne(testUser1._id);
       expect(user).to.be.ok;
       expect(user._id).to.equal(testUser1._id);
     });
+
+    // reference about testing promises in mocha/chai:
+    // http://stackoverflow.com/questions/26571328/how-do-i-properly-test-promises-with-mocha-and-chai
+    it('finds the server when it does exist on the user document', function(){
+      const serverId        = Object.keys(testUser2.devGameServersById)[0];
+      const serverDocument  = testUser2.devGameServersById[serverId];
+      const userId = testUser2._id;
+      Meteor.users.insert(testUser2);
+
+      return GameServers.promiseOneForUser(serverId, userId).then((server) =>{
+        expect(server).to.be.ok;
+        expect(server).to.deep.equal(serverDocument);
+      });
+    });
+
+    it('finds the server when it is inserted into the user document shortly after the promise is requested', function(){
+      const serverId        = Object.keys(testUser2.devGameServersById)[0];
+      const serverDocument  = testUser2.devGameServersById[serverId];
+      const userId = testUser2._id;
+
+      Meteor.setTimeout(() => {
+        Meteor.users.insert(testUser2);
+      }, 250);
+
+      return GameServers.promiseOneForUser(serverId, userId).then((server) => {
+        expect(server).to.be.ok;
+        expect(server).to.deep.equal(serverDocument);
+      });
+    });
+
+    it('finds the server when it is inserted into GameServers shortly after the promise is requested', function(){
+      const serverId        = 'testserverid00000'
+      const serverDocument  = {
+        _id: serverId,
+        url: Meteor.absoluteUrl(),
+        name: 'testServerName',
+      };
+
+      Meteor.users.insert(testUser2);
+      Meteor.setTimeout(() => {
+        GameServers.insert(serverDocument);
+      }, 250);
+
+      return GameServers.promiseOneForUser(serverId, testUser2._id).then((server) => {
+        expect(server).to.be.ok;
+        expect(server).to.deep.equal(serverDocument);
+      });
+    });
+
+
+    it('returns null when the serverId does not exist', function(){
+      return GameServers.promiseOneForUser('does-not-exist', testUser1._id).then((server) => {
+        expect(server).to.be.null;
+      });
+    });
+
   });
 
 });
