@@ -54,7 +54,7 @@
       "consistent-return": "off",
       "no-shadow": "off",
       "space-before-function-paren": ["error", "never"],
-      "func-names": ["error", "never"]
+      "func-names": ["off"]
     }
   }
 

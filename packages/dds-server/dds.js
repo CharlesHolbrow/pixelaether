@@ -32,14 +32,16 @@ Meteor.methods({
 
 
 DDS = function(name, psuedoClass) {
-  const self = this;
 
-  if (!namePattern.test(name)) {
-    throw new Error('DDS name must begin with a letter, and contain only letters, numbers, - _');
-  }
-  if (typeof psuedoClass !== 'function') {
+  if (!namePattern.test(name))
+    throw new Error('DDS name must contain only letters');
+
+  if (typeof psuedoClass !== 'function')
     throw new Error('DDS requires a class constructor');
-  }
+
+  if (instances[name])
+    throw new Error(`DDS name already exists: ${name}`);
+
 
   // Keep track of all Data Stores on this server
   if (instances[name]) return instances[name];
@@ -52,21 +54,21 @@ DDS = function(name, psuedoClass) {
   psuedoClass.prototype.incomplete = true;
 
   // when we .add an object, return a instance of this class
-  self._class = psuedoClass;
+  this._class = psuedoClass;
 
   // Construct
-  self.name     = name;
+  this.name     = name;
 
   // each element is a js object to be de-serialized (a.k.a.
   // objectified) by our clients
-  self.content  = {};
+  this.content  = {};
 
   // each element is an instance of psuedoClass
-  self.objects  = {};
-  self.all      = [];
+  this.objects  = {};
+  this.all      = [];
 
   // Store Raw Data
-  rawData[name] = self.content;
+  rawData[name] = this.content;
 };
 
 DDS.getObject = function(typeName, name) {
@@ -80,15 +82,16 @@ DDS.getObject = function(typeName, name) {
 };
 
 DDS.prototype.add = function(object) {
-  if (!object.name) {
+
+  if (!object.name)
     throw new Error('DDS objects must have a .name');
-  }
-  if (object.hasOwnProperty('incomplete')) {
+
+  if (object.hasOwnProperty('incomplete'))
     throw new Error('.incomplete is an illegal key for DDS objects');
-  }
-  if (typeof this.content[object.name] !== 'undefined') {
+
+  if (typeof this.content[object.name] !== 'undefined')
     throw new Error(`${this.name} DDS object already exists named: ${object.name}`);
-  }
+
 
   // we modify the objects before caching them
   Object.keys(object).forEach((key) => {

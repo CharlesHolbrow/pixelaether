@@ -196,9 +196,9 @@ AetherRift.methods = function(methodsByName){
 // source, because it may invalidate multiple times, returning
 // false more than once.
 var rReady      = new ReactiveVar(false);
-var computation = {stop:()=>{}};
-var onChange    = ()=>{};
-AetherRift.open = function(serverId, cb){
+var computation = { stop: () => {} };
+var onChange    = () => {};
+AetherRift.open = function(serverId, cb) {
   computation.stop();
   onChange(new Error('AetherRift.open request interrupted!'));
 
@@ -209,9 +209,9 @@ AetherRift.open = function(serverId, cb){
   // called more than once.
   if (typeof cb === 'function') onChange = _.once(cb);
 
-  // If it's easy to get the portal, we're laughing. 
+  // If it's easy to get the portal, we're laughing.
   var portalToOpen = getPortalAndReturn(serverId);
-  if (portalToOpen && portalToOpen.connection.status().connected){
+  if (portalToOpen && portalToOpen.connection.status().connected) {
     rReady.set(true);
     setOpenPortal(portalToOpen);
     onChange(null, serverId);
