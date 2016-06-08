@@ -3,6 +3,8 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.export('Addr', ['client', 'server']);
-  api.addFiles('Addr.js', ['client', 'server']);
+  api.export('Addr');
+  api.use('es5-shim');
+  api.use('ecmascript');
+  api.mainModule('Addr.js');
 });
