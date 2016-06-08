@@ -34,6 +34,7 @@ game-server-characters@0.0.0
 game-server-maps@0.0.0
 game-server-tilesets@0.0.0
 game-servers@0.0.1
+game-servers-test-data@0.0.1
 geojson-utils@1.0.8
 hot-code-push@1.0.4
 html-tools@1.0.9

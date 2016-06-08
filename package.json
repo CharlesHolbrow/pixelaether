@@ -49,7 +49,12 @@
       "no-undef": "off",
       "curly": "off",
       "no-console": "off",
-      "padded-blocks": "off"
+      "padded-blocks": "off",
+      "no-param-reassign": "off",
+      "consistent-return": "off",
+      "no-shadow": "off",
+      "space-before-function-paren": ["error", "never"],
+      "func-names": ["error", "never"]
     }
   }
 

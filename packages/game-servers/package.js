@@ -11,6 +11,9 @@ Package.describe({
 
 Package.onUse(function(api) {
 
+  // testOnly package replaces Meteor.settings/pixel.json
+  api.use('game-servers-test-data');
+
   // isomorphic
   api.use(['es5-shim', 'coffeescript', 'check', 'mongo', 'random', 'urlz', 'underscore', 'ddp', 'accounts-base', 'ecmascript']);
 
@@ -21,5 +24,19 @@ Package.onUse(function(api) {
   // isomorphic
   api.export(['serverSelectorPattern', 'GameServers'], ['server', 'client']);
   api.addFiles('game-servers-isomorphic.coffee');
+  api.addFiles('game-servers-isomorphic.js');
 
+});
+
+Package.onTest(function(api) {
+  api.use('practicalmeteor:mocha');
+  api.use('hwillson:stub-collections');
+  api.use('ecmascript');
+  api.use('es5-shim');
+
+  // Testing game-servers on the server not currently supported.
+  // server/generate-settings.coffee causes complications when
+  // running in test mode. For now, we only test on the client.
+  api.use('game-servers', 'client');
+  api.mainModule('./tests/game-servers.tests.js', 'client');
 });
