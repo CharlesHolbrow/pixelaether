@@ -1,5 +1,5 @@
 Package.describe({
-  summary: 'Describes a location in the Pixel Aether',
+  summary: 'Describe a coordinate position on an arbitrary Pixel Aether map',
 });
 
 Package.onUse(function(api){
