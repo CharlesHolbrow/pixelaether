@@ -156,6 +156,10 @@ AetherRift.getCurrentServerId = function(){
   return serverId;
 };
 
+AetherRift.getCurrentServer = function(){
+  return GameServers.findOneForUser(AetherRift.getCurrentServerId());
+};
+
 // Array of all ServerIds
 AetherRift.listGameServerIds = function(){
   return Object.keys(portals);
