@@ -127,6 +127,10 @@ DDS.prototype.add = function(object) {
     newObj.init(object);
   }
 
+  // This may not be needed on the server, but this mimics the
+  // client behavior.
+  newObj.initialized = true;
+
   // Link objects.
   for (const key of Object.keys(newObj)) {
     if (!newObj.hasOwnProperty(key)) continue;
