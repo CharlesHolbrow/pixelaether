@@ -3,8 +3,8 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.export('Addr');
+  api.export('Coord');
   api.use('es5-shim');
   api.use('ecmascript');
-  api.mainModule('Addr.js');
+  api.mainModule('Coord.js');
 });

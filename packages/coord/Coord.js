@@ -1,5 +1,5 @@
 /*------------------------------------------------------------
-An address marks a pixelaether position in World Coordinates
+An coordess marks a pixelaether position in World Coordinates
 
 See coors.md in the docs for more info
 
@@ -12,17 +12,17 @@ resolveTileset
 move
 set
 ------------------------------------------------------------*/
-export class Addr {
+export class Coord {
 
-  constructor(addr) {
-    addr = addr || {};
+  constructor(coord) {
+    coord = coord || {};
 
-    this.px = addr.px || 0;
-    this.py = addr.py || 0;
-    this.tx = addr.tx || 0;
-    this.ty = addr.ty || 0;
-    this.cx = addr.cx || 0;
-    this.cy = addr.cy || 0;
+    this.px = coord.px || 0;
+    this.py = coord.py || 0;
+    this.tx = coord.tx || 0;
+    this.ty = coord.ty || 0;
+    this.cx = coord.cx || 0;
+    this.cy = coord.cy || 0;
   }
 
   copyTo(target) {
@@ -78,13 +78,13 @@ export class Addr {
     if (amount.cy) this.cy += amount.cy;
   }
 
-  set(coords) {
-    if (typeof coords.px === 'number') this.px = coords.px;
-    if (typeof coords.py === 'number') this.py = coords.py;
-    if (typeof coords.tx === 'number') this.tx = coords.tx;
-    if (typeof coords.ty === 'number') this.ty = coords.ty;
-    if (typeof coords.cx === 'number') this.cx = coords.cx;
-    if (typeof coords.cy === 'number') this.cy = coords.cy;
+  set(coord) {
+    if (typeof coord.px === 'number') this.px = coord.px;
+    if (typeof coord.py === 'number') this.py = coord.py;
+    if (typeof coord.tx === 'number') this.tx = coord.tx;
+    if (typeof coord.ty === 'number') this.ty = coord.ty;
+    if (typeof coord.cx === 'number') this.cx = coord.cx;
+    if (typeof coord.cy === 'number') this.cy = coord.cy;
   }
 
 } // Addr class

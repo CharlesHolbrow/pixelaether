@@ -1,6 +1,5 @@
 accounts-base@1.2.7
 accounts-password@1.1.8
-addr@0.0.0
 allow-deny@1.0.4
 autoupdate@1.2.9
 babel-compiler@6.6.4
@@ -16,6 +15,7 @@ caching-html-compiler@1.0.6
 callback-hook@1.0.8
 check@1.2.1
 coffeescript@1.0.17
+coord@0.0.0
 ddp@1.2.5
 ddp-client@1.2.7
 ddp-common@1.2.5

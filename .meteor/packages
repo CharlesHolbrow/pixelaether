@@ -23,4 +23,4 @@ ecmascript
 es5-shim
 map-forest
 tileset-characters
-addr
+coord

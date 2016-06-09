@@ -9,7 +9,6 @@ Server side Meteor methods are responsible for verifying a
 user is allowed to call these
 ------------------------------------------------------------*/
 
-import { Addr } from 'meteor/addr';
 
 MapClass = function(serverId, name){
   // all dds types must do this
@@ -100,7 +99,7 @@ MapClass.prototype.moveCharacterTo = function(selector, ctxy){
 };
 
 MapClass.prototype.query = function(ctxy){
-  // should map methods take an addr?
+  // should map methods take Coords?
   if (this.incomplete) return [];
   this.checkCtxy(ctxy);
 
