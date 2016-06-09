@@ -78,7 +78,6 @@ MapClass.prototype.checkCtxy = function(ctxy){
   return ctxy;
 };
 
-// this is a very hacky way to check if there is an obstruction
 MapClass.prototype.isObstructed = function(ctxy){
   if (this.incomplete) return undefined; // consider console.warn?
   this.checkCtxy(ctxy);
@@ -99,7 +98,7 @@ MapClass.prototype.moveCharacterTo = function(selector, ctxy){
 };
 
 MapClass.prototype.query = function(ctxy){
-  // should map methods take Coords?
+  // should map methods take a Coord?
   if (this.incomplete) return [];
   this.checkCtxy(ctxy);
 
