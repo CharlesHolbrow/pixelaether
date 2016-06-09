@@ -1,17 +1,14 @@
-// Note that unlike findOneForUser, this function accepts only a
-// serverId as the first argument, NOT a mogodbSelector
-//
 // Note that this may return null. I would like it to always
 // return null if the results were not found, but I do know know
 // exactly how all paths resolve.
-GameServers.promiseOneForUser = function(serverId, userId) {
+GameServers.promiseOneForUser = function(selector, userId) {
   return new Promise((resolve, reject) => {
 
-    if (typeof serverId !== 'string')
-      reject(Error('GameServers.promiseOneForUser: serverId must be a string'));
+    if (typeof selector !== 'string' && typeof selector !== 'object')
+      reject(Error('GameServers.promiseOneForUser: selector argument must be a string or object'));
 
     // First try to get the server
-    let server = GameServers.findOne(serverId);
+    let server = GameServers.findOne(selector);
     if (server)
       return resolve(server);
 
@@ -34,7 +31,12 @@ GameServers.promiseOneForUser = function(serverId, userId) {
     const user  = users.findOne(userId, { fields: { devGameServersById: 1 } });
 
     if (user && user.devGameServersById) {
-      server = user.devGameServersById[serverId];
+
+      if (typeof selector === 'string')
+        server = user.devGameServersById[selector];
+      else
+        server = _.findWhere(user.devGameServersById, selector);
+
       if (server)
         return resolve(server);
     }
@@ -47,7 +49,7 @@ GameServers.promiseOneForUser = function(serverId, userId) {
     // However, if we are not on the master server Keep trying
     // inside a reactive computation.
     const computation = Tracker.autorun((comp) => {
-      let server = GameServers.findOne(serverId);
+      let server = GameServers.findOne(selector);
       if (server) {
         comp.stop();
         return resolve(server);
@@ -56,7 +58,15 @@ GameServers.promiseOneForUser = function(serverId, userId) {
       const user = users.findOne(userId, { fields: { devGameServersById: 1 } });
 
       if (user && user.devGameServersById) {
-        server = user.devGameServersById[serverId];
+
+        // Try to find the server info on the user document.
+        // Remember we don't know if the selector is a
+        // string or an object selector.
+        if (typeof selector === 'string')
+          server = user.devGameServersById[selector];
+        else
+          server = _(user.devGameServersById).findWhere(selector);
+
         if (server) {
           comp.stop();
           return resolve(server);
