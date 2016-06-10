@@ -9,26 +9,18 @@ serverIds to identify servers instead of URLs.
 
 Like Rift, AetherRift is a pseudo-singleton. Don't call
 new AetherRift. Instead just use AetherRift.add() etc
-
-call(methodName)
-collection(name, serverId)
-connection(serverId)
-list()
-methods(methods)
-open(serverId, wait)
-status(serverId)
-url()
-userId(serverId)
 --------------------------------------------------------------*/
-var RIFT_TIMEOUT = 15 * 1000;
+
+
+const RIFT_TIMEOUT = 15 * 1000;
 
 // getPortalAndReturn is a reactive data source. It will
 // return undefined unless the pre-requisite document is
 // available. This document could be a GameServer document.
 // If the server we are requesting is a development server,
 // the document will probably be from the the users collection.
-getPortalAndReturn = function(serverId){
-  var portal;
+getPortalAndReturn = function(serverId) {
+  let portal;
 
   if (!serverId) return getOpenPortal();
   if (portals[serverId]) return portals[serverId];
@@ -36,9 +28,9 @@ getPortalAndReturn = function(serverId){
   server = GameServers.findOneForUser(serverId);
   if (!server) return undefined;
   if (serverId !== server._id)
-    throw new Error(`WTF GameServers.findOneForUser is broken for $(serverId)`);
+    throw new Error(`WTF GameServers.findOneForUser is broken for ${serverId}`);
 
-  if (GameServers.isGameServer() && server.url === masterServerUrl){
+  if (GameServers.isGameServer() && server.url === masterServerUrl) {
     portal = new Portal(server.url, serverId, GameServers.masterServerConnection);
     portal.collections.game_servers = GameServers;
     portal.collections.users = GameServers.masterUsersCollection;
@@ -50,7 +42,7 @@ getPortalAndReturn = function(serverId){
   return portal;
 };
 
-getPortalAndCb = function(serverId, cb){
+getPortalAndCb = function(serverId, cb) {
 
   if (typeof cb === 'function') cb = _.once(cb);
 
@@ -73,7 +65,7 @@ getPortalAndCb = function(serverId, cb){
   // We failed to get the portal immediately. However, a
   // callback was provided, so we keep trying until the request
   // times out.
-  var timeout = Meteor.setTimeout(()=>{
+  var timeout = Meteor.setTimeout(() => {
     if (!computation) return;
     if (computation.stopped) return;
     // The computation is still running, and the timeout has
@@ -82,7 +74,7 @@ getPortalAndCb = function(serverId, cb){
     cb(new Meteor.Error('time-out'));
   }, RIFT_TIMEOUT);
 
-  var computation = Tracker.autorun((computation)=>{
+  var computation = Tracker.autorun((computation) => {
     var portal = getPortalAndReturn(serverId);
     if (!portal) return;
     // We got the portal, call the callback, stop trying.
@@ -170,12 +162,12 @@ AetherRift.methods = function(methodsByName){
     throw new Error('Rift.methods requires an object as an argument');
   }
 
-  for (let key in methodsByName){
-    if (methods[key]){
+  for (let key in methodsByName) {
+    if (methods[key]) {
       throw new Error('Rift Method already exists:', key);
     }
     var item = methodsByName[key];
-    if (typeof item === 'function' ){
+    if (typeof item === 'function') {
       methods[key] = item;
     } else {
       throw new Error(`Method not a function: ${key}`);
@@ -199,10 +191,10 @@ AetherRift.methods = function(methodsByName){
 // not (reactive). Not that this is not the perfect reactive
 // source, because it may invalidate multiple times, returning
 // false more than once.
-var rReady      = new ReactiveVar(false);
-var computation = { stop: () => {} };
-var onChange    = () => {};
-AetherRift.open = function(serverId, cb) {
+const rReady      = new ReactiveVar(false);
+let computation = { stop: () => {} };
+let onChange    = () => {};
+AetherRift.open = function(serverId, cb, timeout = RIFT_TIMEOUT) {
   computation.stop();
   onChange(new Error('AetherRift.open request interrupted!'));
 
@@ -228,8 +220,8 @@ AetherRift.open = function(serverId, cb) {
   // resolve with the server before the open request can
   // complete.
   rReady.set(false);
-  computation = Tracker.autorun((computation)=>{
-    var portalToOpen = getPortalAndReturn(serverId);
+  computation = Tracker.autorun((computation) => {
+    const portalToOpen = getPortalAndReturn(serverId);
     if (!portalToOpen) return;
     if (!portalToOpen.connection.status().connected) return;
     // at this point, we know that we are connected;
@@ -239,37 +231,59 @@ AetherRift.open = function(serverId, cb) {
     onChange(null, serverId);
   });
 
+  // allow us to pass null as a timeout. If we do, just keep
+  // trying until we change to another Rift.
+  if (typeof timeout === 'number') {
+    const computationReference = computation; // make sure we stop the correct computation
+    Meteor.setTimeout(() => {
+      computationReference.stop();
+      cb(new Error(`Timeout while trying to open Rift to ${serverId}`));
+    }, timeout);
+  }
+
   // We failed to return the portal immediately.
   return false;
 };
 
-AetherRift.ready = function(){
+AetherRift.promiseOpen = function(serverId, timeout) {
+  return new Promise((resolve, reject) => {
+    AetherRift.open(serverId, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    }, timeout);
+  });
+};
+
+AetherRift.ready = function() {
   return rReady.get();
 };
 
-AetherRift.status = function(serverId, cb){
-  var outerCb;
-  if (typeof cb === 'function'){ outerCb = (err, portal)=>{
-    let status = portal && portal.connection.status();
-    cb(err, status);
-  };}
-  let portal = getPortalAndCb(serverId, outerCb);
+AetherRift.status = function(serverId, cb) {
+  let outerCb;
+  if (typeof cb === 'function') {
+    outerCb = (err, portal) => {
+      const status = portal && portal.connection.status();
+      cb(err, status);
+    };
+  }
+  const portal = getPortalAndCb(serverId, outerCb);
   return  portal && portal.connection.status();
 };
 
-AetherRift.url = function(){
-  var portal = getOpenPortal();
-  return portal.url;
+AetherRift.url = function() {
+  return getOpenPortal().url;
 };
 
 // userId() Returns undefined if portal is not available.
 // userId() Returns null if we are not logged in.
-AetherRift.userId = function(serverId, cb){
-  var outerCb;
-  if (typeof cb === 'function'){ outerCb = (err, portal)=>{
-    var userId = portal && portal.connection.userId();
-    cb(err, userId);
-  };}
-  let portal = getPortalAndCb(serverId, outerCb);
+AetherRift.userId = function(serverId, cb) {
+  let outerCb;
+  if (typeof cb === 'function') {
+    outerCb = (err, portal) => {
+      const userId = portal && portal.connection.userId();
+      cb(err, userId);
+    };
+  }
+  const portal = getPortalAndCb(serverId, outerCb);
   return portal && portal.connection.userId();
 };

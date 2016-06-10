@@ -87,4 +87,8 @@ export class Coord {
     if (typeof coord.cy === 'number') this.cy = coord.cy;
   }
 
+  toString() {
+    return `chunk(${this.cx},${this.cy}) tile(${this.tx},${this.ty}) pixel(${this.px},${this.py})`;
+  }
+
 } // Addr class
