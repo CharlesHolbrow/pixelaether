@@ -10,6 +10,7 @@
 # - GameServers.localId()               (method)
 # - GameServers.localUrl()              (method)
 # - GameServers.gameServersSubscription (subscription) (GameServer and client only - Meteor.connection is undefined on the server)
+# - GameServers.promiseReady()          (method)       (GameServer and client only - verify that the gameServerSubscription is ready)
 #
 # This file also currently actually generates the localId and
 # localName values. These values are derived from

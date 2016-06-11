@@ -81,3 +81,22 @@ GameServers.promiseOneForUser = function(selector, userId) {
     }, 5000);
   });
 };
+
+if (GameServers.gameServersSubscription) {
+  GameServers.promiseReady = function(timeout = 15000) {
+    return new Promise((resolve, reject) => {
+
+      const comp = Tracker.autorun((comp) => {
+        if (!GameServers.gameServersSubscription.ready()) return;
+        comp.stop();
+        resolve(true);
+      });
+
+      Meteor.setTimeout(() => {
+        comp.stop();
+        reject(new Error('timeout'));
+      }, timeout);
+    });
+
+  };
+}

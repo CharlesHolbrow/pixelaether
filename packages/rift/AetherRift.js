@@ -237,7 +237,7 @@ AetherRift.open = function(serverId, cb, timeout = RIFT_TIMEOUT) {
     const computationReference = computation; // make sure we stop the correct computation
     Meteor.setTimeout(() => {
       computationReference.stop();
-      cb(new Error(`Timeout while trying to open Rift to ${serverId}`));
+      onChange(new Error(`Timeout while trying to open Rift to ${serverId}`));
     }, timeout);
   }
 
