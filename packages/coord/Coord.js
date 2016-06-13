@@ -34,6 +34,15 @@ export class Coord {
     if (typeof target.cy === 'number') target.cy = this.cy;
   }
 
+  get ctxy() {
+    return {
+      cx: this.cx,
+      cy: this.cy,
+      tx: this.tx,
+      ty: this.ty,
+    };
+  }
+
   resolve(map, tileset) {
     if (map && !tileset) tileset = map.tileset;
     if (tileset) this.resolveTileset(tileset);
