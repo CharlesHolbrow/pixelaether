@@ -27,7 +27,7 @@ const testUser1 = {
       "rootUserId" : "F33do6abmXFXBR47b_DMASTER27f2191eb2"
     }
   },
-  "focusCharacterId" : "tYf7wZ2Zv8kMGiMrF_DMASTER27f2191eb2",
+  "activeCharacterId" : "tYf7wZ2Zv8kMGiMrF_DMASTER27f2191eb2",
   "tokensByServerId" : {
     "D2ma059183fd54dc7" : "YEJqdyShVpHf69KrNcGnXGYJUP6rtHJEhjO7NzoZky9"
   }
@@ -51,7 +51,7 @@ const testUser2 = {
       "rootUserId" : "zrH7EMEkiYetGxp3x_DMASTER27f2191eb2"
     }
   },
-  "focusCharacterId" : "h78qXzdXRKdx2yALR_DMASTER27f2191eb2",
+  "activeCharacterId" : "h78qXzdXRKdx2yALR_DMASTER27f2191eb2",
   "tokensByServerId" : {
     "D1md6t117a43be5cb" : "Nn09XlJRi-lmixmN9sGVAvVFhpRmON5DJYsDu8yapd8",
     "P1md6t117a43be5cb" : "E0lbBtorKsahHqKusk2ddDH9Uofse1L_iKvanqe2e6f"
