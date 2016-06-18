@@ -23,22 +23,22 @@ GameServers.promiseOneForUser = function(selector, userId) {
       return resolve(null);
 
     userId = userId || GameServers.masterServerConnection.userId();
-    // If we still do not have a userId then our search failed
-    if (!userId)
-      return resolve(null);
 
-    const users = GameServers.masterUsersCollection;
-    const user  = users.findOne(userId, { fields: { devGameServersById: 1 } });
+    // If we have a user try looking in the user's document
+    if (userId) {
+      const users = GameServers.masterUsersCollection;
+      const user  = users.findOne(userId, { fields: { devGameServersById: 1 } });
 
-    if (user && user.devGameServersById) {
+      if (user && user.devGameServersById) {
 
-      if (typeof selector === 'string')
-        server = user.devGameServersById[selector];
-      else
-        server = _.findWhere(user.devGameServersById, selector);
+        if (typeof selector === 'string')
+          server = user.devGameServersById[selector];
+        else
+          server = _.findWhere(user.devGameServersById, selector);
 
-      if (server)
-        return resolve(server);
+        if (server)
+          return resolve(server);
+      }
     }
 
     // We do not have the data immediately available. If we are
@@ -54,7 +54,7 @@ GameServers.promiseOneForUser = function(selector, userId) {
         comp.stop();
         return resolve(server);
       }
-
+      const users = GameServers.masterUsersCollection;
       const user = users.findOne(userId, { fields: { devGameServersById: 1 } });
 
       if (user && user.devGameServersById) {
