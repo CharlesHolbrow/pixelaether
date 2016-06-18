@@ -10,7 +10,7 @@ user is allowed to call these
 ------------------------------------------------------------*/
 
 
-MapClass = function(serverId, name){
+MapClass = function(serverId, name) {
   // all dds types must do this
   this.name = name;
   this.serverId = serverId;
@@ -36,13 +36,13 @@ MapClass = function(serverId, name){
 
 // Match an object where any of cx, cy, tx, ty are either not
 // present, or are integers.
-var ctxyPattern = Match.Where(function(input){
-  var ctxy = _.pick(input, 'cx', 'cy', 'tx', 'ty');
+const ctxyPattern = Match.Where((input) => {
+  const ctxy = _.pick(input, 'cx', 'cy', 'tx', 'ty');
   return Match.test(ctxy, {
     cx: Match.Integer,
     cy: Match.Integer,
     tx: Match.Integer,
-    ty: Match.Integer
+    ty: Match.Integer,
   });
 });
 
@@ -57,17 +57,17 @@ setTile
 throw
 ------------------------------------------------------------*/
 // return a character document or throw an error
-MapClass.prototype.checkCharacter = function(selector){
+MapClass.prototype.checkCharacter = function(selector) {
   // make sure that the character exists on map named mapName
-  character = this.characters.findOne(selector);
-  if (typeof characterOrId !== 'object')
-    this.throw('moveCharacterTo character not valid or not found: ' + characterOrId);
+  const character = this.characters.findOne(selector);
+  if (typeof character !== 'object')
+    this.throw(`Character not valid or not found: ${JSON.stringify(selector)}`);
   return character;
 };
 
 // Verify ctxy has all four values and they are in range
 // ctxy MAY have additional keys beyond ctxy
-MapClass.prototype.checkCtxy = function(ctxy){
+MapClass.prototype.checkCtxy = function(ctxy) {
   check(ctxy, ctxyPattern);
   if (this.incomplete)
     this.throw('map incomplete');
@@ -78,11 +78,11 @@ MapClass.prototype.checkCtxy = function(ctxy){
   return ctxy;
 };
 
-MapClass.prototype.isObstructed = function(ctxy){
+MapClass.prototype.isObstructed = function(ctxy) {
   if (this.incomplete) return undefined; // consider console.warn?
   this.checkCtxy(ctxy);
 
-  const tiles = this._queryChunks(ctxy).filter((val)=>{
+  const tiles = this._queryChunks(ctxy).filter((val) => {
     return this.tileset.prop(val, 'obstructed');
   }, this);
 
@@ -92,12 +92,14 @@ MapClass.prototype.isObstructed = function(ctxy){
   return (obstacles.length) ? obstacles : false;
 };
 
-MapClass.prototype.moveCharacterTo = function(selector, ctxy){
+MapClass.prototype.moveCharacterTo = function(selector, ctxy) {
   this.checkCtxy(ctxy);
-  this.characters.update(selector, {$set:{cx:ctxy.cx, cy:ctxy.cy, tx:ctxy.tx, ty:ctxy.ty}});
+  this.characters.update(selector, { $set:
+    { cx: ctxy.cx, cy: ctxy.cy, tx: ctxy.tx, ty: ctxy.ty },
+  });
 };
 
-MapClass.prototype.query = function(ctxy){
+MapClass.prototype.query = function(ctxy) {
   // should map methods take a Coord?
   if (this.incomplete) return [];
   this.checkCtxy(ctxy);
@@ -105,56 +107,57 @@ MapClass.prototype.query = function(ctxy){
   const results = this._queryChunks(ctxy);
 
   // and get all the characters
-  var chars = this._queryCharacters(ctxy);
+  const chars = this._queryCharacters(ctxy);
 
   return results.concat(chars);
 };
 
 // protected by an underscore, because input is not checked
-MapClass.prototype._queryCharacters = function(ctxy){
+MapClass.prototype._queryCharacters = function(ctxy) {
   return this.characters.find(
-    {cx:ctxy.cx, cy:ctxy.cy, tx:ctxy.tx, ty:ctxy.ty}
+    { cx: ctxy.cx, cy: ctxy.cy, tx: ctxy.tx, ty: ctxy.ty }
   ).fetch();
 };
 
 // protected by an underscore, because input is not checked
 // for now I'm not going to include any zeros. in the results
-MapClass.prototype._queryChunks = function(ctxy){
+MapClass.prototype._queryChunks = function(ctxy) {
   const results = [];
-  const chunk = this.chunks.findOne({cx: ctxy.cx, cy:ctxy.cy});
+  const chunk = this.chunks.findOne({ cx: ctxy.cx, cy: ctxy.cy });
   const index = ctxy.ty * this.chunkWidth + ctxy.tx;
 
   if (!chunk) return results;
 
   // get the layer names
-  for (let i = 0; i < chunk.layerNames.length; i++){
-    let val = chunk[chunk.layerNames[i]][index];
+  for (let i = 0; i < chunk.layerNames.length; i++) {
+    const val = chunk[chunk.layerNames[i]][index];
     if (val) results.push(val); // don't push zeros
   }
   return results;
 };
 
-MapClass.prototype.queryNames = function(ctxy){
+MapClass.prototype.queryNames = function(ctxy) {
   const results = this.query(ctxy);
   return this.tileset.indicesToNames(results);
 };
 
-MapClass.prototype.setTile = function (ctxy, i, layerName) {
+MapClass.prototype.setTile = function(ctxy, i, layerName) {
   layerName = layerName || 'ground';
 
   check(i, Match.Integer);
   check(layerName, String);
   this.checkCtxy(ctxy);
 
-  var tileIndex = ctxy.ty * this.chunkWidth + ctxy.tx; // convert xy to index
-  var options = {$set:{}};
-  options.$set[layerName + '.' + tileIndex] = i;
+  const tileIndex = ctxy.ty * this.chunkWidth + ctxy.tx; // convert xy to index
+  const options = { $set: {} };
+  options.$set[`${layerName}.${tileIndex}`] = i;
 
   // layerNames key in the selector is very important.
   // prevent users from inserting arbitrary layers into our chunks
-  this.chunks.update({cx:ctxy.cx, cy:ctxy.cy, layerNames:layerName}, options);
+  this.chunks.update({ cx: ctxy.cx, cy: ctxy.cy, layerNames: layerName }, options);
 };
 
-MapClass.prototype.throw = function(reason){
-  throw new Meteor.Error(this.name + ' Map Error: ' + (reason || 'Unknown Error'));
+MapClass.prototype.throw = function(reason) {
+  reason = reason || 'Unknown Error';
+  throw new Meteor.Error(`${this.name} Map Error: ${reason}`);
 };
