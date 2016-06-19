@@ -7,5 +7,5 @@ Package.onUse(function(api) {
   api.export('ReactiveCoord');
   api.use('es5-shim');
   api.use('ecmascript');
-  api.mainModule('index.js');
+  api.mainModule('./index.js');
 });

@@ -1,3 +1,4 @@
+import { Coord } from 'meteor/coord';
 /*------------------------------------------------------------
 DDS ORM Model for our maps
 
@@ -160,4 +161,58 @@ MapClass.prototype.setTile = function(ctxy, i, layerName) {
 MapClass.prototype.throw = function(reason) {
   reason = reason || 'Unknown Error';
   throw new Meteor.Error(`${this.name} Map Error: ${reason}`);
+};
+
+// Generator returns all addresses in order that we must check
+// given a starting point and a direction.
+//
+// For example if radius = 2, direction = 'n', our generator
+// will return the addresses of the positions in the quadrant
+// north of the player in the order shown below.
+//
+// 4 5 6 7 8
+//   1 2 3
+//     @
+//
+const losKey = {
+  n: {
+    // When checking the north direction, each new line that we
+    // check moves this much from the previous new line.
+    line: { tx: -1, ty: 1 },
+    // When checking the north direction each step on the line
+    // moves by this much.
+    step: { tx: 1 },
+  },
+  e: {
+    line: { tx: 1, ty: 1 },
+    step: { ty: -1 },
+  },
+  s: {
+    line: { tx: 1, ty: -1 },
+    step: { tx: -1 },
+  },
+  w: {
+    line: { tx: -1, ty: -1 },
+    step: { ty: 1 },
+  },
+};
+MapClass.prototype.losCoordGenerator = function*(startCtxy, direction, radius = 3) {
+  const line  = losKey[direction].line;
+  const step  = losKey[direction].step;
+
+  const newLineCoord = new Coord(startCtxy);
+  const stepCoord    = new Coord();
+  for (let r = 1; r <= radius; r++) {
+    const width = Math.abs(r * 2 + 1);
+    newLineCoord.move(line);
+    stepCoord.set(newLineCoord);
+    let w = 0;
+    while (true) {
+      stepCoord.resolveMap(this);
+      yield stepCoord;
+
+      if (++w >= width) break;
+      stepCoord.move(step);
+    }
+  }
 };

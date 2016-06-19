@@ -55,7 +55,8 @@
       "no-shadow": "off",
       "space-before-function-paren": ["error", "never"],
       "func-names": "off",
-      "no-underscore-dangle": "off"
+      "no-underscore-dangle": "off",
+      "no-constant-condition": ["error", { "checkLoops": false }]
     }
   }
 
