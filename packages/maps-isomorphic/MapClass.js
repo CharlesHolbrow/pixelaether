@@ -137,6 +137,15 @@ MapClass.prototype._queryChunks = function(ctxy) {
   return results;
 };
 
+// protected by an underscore, because input is not checked
+MapClass.prototype._isOpaque = function(ctxy) {
+  const results = this._queryChunks(ctxy);
+  for (index of results) {
+    if (this.tileset.prop(index, 'opaque')) return true;
+  }
+  return false;
+};
+
 MapClass.prototype.queryNames = function(ctxy) {
   const results = this.query(ctxy);
   return this.tileset.indicesToNames(results);
@@ -215,4 +224,99 @@ MapClass.prototype.losCoordGenerator = function*(startCtxy, direction, radius = 
       stepCoord.move(step);
     }
   }
+};
+
+
+MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
+
+  const ans = {};
+
+  for (const dir of ['n', 's', 'e', 'w']) {
+
+    const obstructedAngles = [];
+    let obstructedAnglesSize = 0;
+
+    // this is just a temporary way to return the results.
+    ans[dir] = obstructedAngles;
+
+    const gen = this.losCoordGenerator(startCtxy, dir, radius);
+
+    // iterate over each row
+    for (let r = 1; r <= radius; r++) {
+
+      // how many tiles are there on this row?
+      const width = Math.abs(r * 2 + 1);
+      // Every tile has two divisions (NOT width * 2 + 1).
+      const divs = width * 2;
+      const div = 1 / divs;
+
+      let w = 0;
+
+      let numObstaclesOnThisRow = 0;
+      let lastTileInRowisOpaque = false;
+
+      while (true) {
+
+        // Find the three angles for this tile. In Chrome, using
+        // multiplication instead of addition to find the angles
+        // yields more accurate floating point values.
+        const a1 = w * 2 * div;
+        const a2 = (w * 2 + 1) * div;
+        // The last time through the loop, we may get a floating
+        // point arithmatic error. (.99999999 instead of 1)
+        // If this is the last tile on the row, set final angle
+        // to 1.
+        const a3 = (w === width - 1) ? 1 : (w * 2 + 2) * div;
+
+        // first check if we can see this point
+        let pointIsVisible = true;
+
+        for (let i = 0; i < obstructedAnglesSize; i++) {
+          const [obA1, obA2] = obstructedAngles[i];
+
+          // is the center of the tile obstructed?
+          if (a2 > obA1 && a2 < obA2) {
+            // cant see center = cant see tile
+            pointIsVisible = false;
+            break;
+          }
+          // the center of the point is visible
+          // if both angles are obstructed, the tile is obstructed
+          if ((a1 > obA1 && a1 < obA2) && (a3 > obA1 && a3 < obA2)) {
+            pointIsVisible = false;
+            break;
+          }
+        }
+
+        // We now know if the point is visible (or not). If it
+        // is, check if it is obstructing other tiles. We assume
+        // that if the tile is not visible, it is not capable of
+        // obstructing tiles on further levels.
+        const coord = gen.next().value; // we must make sure this gets called every step of the way
+        if (pointIsVisible) {
+          if (this._isOpaque(coord)) {
+            // If the last tile in the row was opaque, we do not
+            // need to create another entry in the array of
+            // obstructed angles. We can just increase the size
+            // of the last entry.
+            if (lastTileInRowisOpaque) {
+              obstructedAngles[obstructedAngles.length - 1][1] = a3;
+            } else {
+              obstructedAngles.push([a1, a3]);
+              numObstaclesOnThisRow++;
+            }
+            lastTileInRowisOpaque = true;
+          }
+        }
+
+        if (++w >= width) {
+          // start a new row
+          obstructedAnglesSize += numObstaclesOnThisRow;
+          numObstaclesOnThisRow = 0;
+          break;
+        }
+      }
+    }
+  }
+  return ans;
 };
