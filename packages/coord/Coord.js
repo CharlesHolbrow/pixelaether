@@ -12,9 +12,18 @@ resolveTileset
 move
 set
 ------------------------------------------------------------*/
+
+
+const ctxyRegex  = /^(-?[0-9]+)\|(-?[0-9]+)\|(-?[0-9]+)\|(-?[0-9]+)$/;
+const cxyRegex  = /^(-?[0-9]+)\|(-?[0-9]+)/; // Note that cxy can also inflate ctxy strings
+
+
 export class Coord {
 
   constructor(coord) {
+    if (typeof coord === 'string')
+      coord = Coord.inflateCtxy(coord);
+
     coord = coord || {};
 
     this.px = coord.px || 0;
@@ -38,6 +47,13 @@ export class Coord {
     return {
       cx: this.cx,
       cy: this.cy,
+      tx: this.tx,
+      ty: this.ty,
+    };
+  }
+
+  get txy() {
+    return {
       tx: this.tx,
       ty: this.ty,
     };
@@ -98,6 +114,40 @@ export class Coord {
 
   toString() {
     return `chunk(${this.cx},${this.cy}) tile(${this.tx},${this.ty}) pixel(${this.px},${this.py})`;
+  }
+
+  get ctxyString() {
+    return `${this.cx}|${this.cy}|${this.tx}|${this.ty}`;
+  }
+
+  get cxyString() {
+    return `${this.cx}|${this.cy}`;
+  }
+
+  get txyString() {
+    return `${this.tx}|${this.ty}`;
+  }
+
+  static inflateCtxy(str) {
+    const match = str.match(ctxyRegex);
+    if (!match)
+      throw new Error(`"${str}" is not a valid ctxy string`);
+    return {
+      cx: parseInt(match[1], 10),
+      cy: parseInt(match[2], 10),
+      tx: parseInt(match[3], 10),
+      ty: parseInt(match[4], 10),
+    };
+  }
+
+  static inflateCxy(str) {
+    const match = str.match(cxyRegex);
+    if (!match)
+      throw new Error(`"${str}" is not a valid cxy string`);
+    return {
+      cx: parseInt(match[1], 10),
+      cy: parseInt(match[2], 10),
+    };
   }
 
 } // Addr class

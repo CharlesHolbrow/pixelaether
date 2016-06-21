@@ -229,15 +229,19 @@ MapClass.prototype.losCoordGenerator = function*(startCtxy, direction, radius = 
 
 MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
 
-  const ans = {};
+  const lightMap = {};
+  const setLightLevel = (coord, level) => {
+    const cxyString = coord.cxyString;
+    if (!lightMap.hasOwnProperty(cxyString)) lightMap[cxyString] = {};
+
+    const index = (coord.ty * this.chunkWidth) + coord.tx;
+    lightMap[cxyString][`${index}`] = level;
+  };
 
   for (const dir of ['n', 's', 'e', 'w']) {
 
     const obstructedAngles = [];
     let obstructedAnglesSize = 0;
-
-    // this is just a temporary way to return the results.
-    ans[dir] = obstructedAngles;
 
     const gen = this.losCoordGenerator(startCtxy, dir, radius);
 
@@ -258,8 +262,8 @@ MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
       while (true) {
 
         // Find the three angles for this tile. In Chrome, using
-        // multiplication instead of addition to find the angles
-        // yields more accurate floating point values.
+        // multiplication (not repeated addition) yields more
+        // accurate floating point angles.
         const a1 = w * 2 * div;
         const a2 = (w * 2 + 1) * div;
         // The last time through the loop, we may get a floating
@@ -268,8 +272,8 @@ MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
         // to 1.
         const a3 = (w === width - 1) ? 1 : (w * 2 + 2) * div;
 
-        // first check if we can see this point
-        let pointIsVisible = true;
+        // Check if this tile is obstructed by previous rows
+        let tileIsVisible = true;
 
         for (let i = 0; i < obstructedAnglesSize; i++) {
           const [obA1, obA2] = obstructedAngles[i];
@@ -277,23 +281,28 @@ MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
           // is the center of the tile obstructed?
           if (a2 > obA1 && a2 < obA2) {
             // cant see center = cant see tile
-            pointIsVisible = false;
+            tileIsVisible = false;
             break;
           }
-          // the center of the point is visible
+          // The center of the tile is visible.
           // if both angles are obstructed, the tile is obstructed
           if ((a1 > obA1 && a1 < obA2) && (a3 > obA1 && a3 < obA2)) {
-            pointIsVisible = false;
+            tileIsVisible = false;
             break;
           }
         }
 
-        // We now know if the point is visible (or not). If it
-        // is, check if it is obstructing other tiles. We assume
-        // that if the tile is not visible, it is not capable of
-        // obstructing tiles on further levels.
+        // We now know if the tile is obstructed (or not). If it
+        // is not obstructed, check if it is obstructing other
+        // tiles. We assume that if the tile is not visible, it
+        // is not capable of obstructing tiles on deeper levels.
+
         const coord = gen.next().value; // we must make sure this gets called every step of the way
-        if (pointIsVisible) {
+        if (tileIsVisible) {
+
+          // mark the tile as visible in our results
+          setLightLevel(coord, 100);
+
           if (this._isOpaque(coord)) {
             // If the last tile in the row was opaque, we do not
             // need to create another entry in the array of
@@ -318,5 +327,5 @@ MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
       }
     }
   }
-  return ans;
+  return lightMap;
 };
