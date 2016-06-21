@@ -226,16 +226,34 @@ MapClass.prototype.losCoordGenerator = function*(startCtxy, direction, radius = 
   }
 };
 
-
-MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
+// chunkCatalog is an object where keys are deflated cxy
+// strings, and values are chunks retrived from the chunks
+// collection.
+//
+MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
 
   const lightMap = {};
+
   const setLightLevel = (coord, level) => {
     const cxyString = coord.cxyString;
     if (!lightMap.hasOwnProperty(cxyString)) lightMap[cxyString] = {};
 
     const index = (coord.ty * this.chunkWidth) + coord.tx;
-    lightMap[cxyString][`${index}`] = level;
+    lightMap[cxyString][index] = level;
+  };
+
+  // TODO: don't let this throw on a bad chunk
+  const isOpaque = (coord) => {
+    // Try to get the chunk from chunkCatalog
+    const chunk = chunkCatalog[coord.cxyString];
+    if (!chunk) return null;
+
+    // Cheack Each Layer
+    for (const layerName of chunk.layerNames) {
+      const index = chunk[layerName][coord.ty * chunk.width + coord.tx];
+      if (this.tileset.prop(index, 'opaque')) return true;
+    }
+    return false;
   };
 
   for (const dir of ['n', 's', 'e', 'w']) {
@@ -257,13 +275,16 @@ MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
       let w = 0;
 
       let numObstaclesOnThisRow = 0;
-      let lastTileInRowisOpaque = false;
+      let lastTileInRowIsOpaque = false;
 
       while (true) {
 
         // Find the three angles for this tile. In Chrome, using
         // multiplication (not repeated addition) yields more
         // accurate floating point angles.
+        // .2 + .2 + .2 + .2 === 0.8000000000000001
+        // .2 * 4            === 0.8
+
         const a1 = w * 2 * div;
         const a2 = (w * 2 + 1) * div;
         // The last time through the loop, we may get a floating
@@ -301,20 +322,22 @@ MapClass.prototype.checkAllQuadrants = function(startCtxy, radius) {
         if (tileIsVisible) {
 
           // mark the tile as visible in our results
-          setLightLevel(coord, 100);
+          setLightLevel(coord, 222);
 
-          if (this._isOpaque(coord)) {
+          if (isOpaque(coord)) {
             // If the last tile in the row was opaque, we do not
             // need to create another entry in the array of
             // obstructed angles. We can just increase the size
             // of the last entry.
-            if (lastTileInRowisOpaque) {
+            if (lastTileInRowIsOpaque) {
               obstructedAngles[obstructedAngles.length - 1][1] = a3;
             } else {
               obstructedAngles.push([a1, a3]);
               numObstaclesOnThisRow++;
             }
-            lastTileInRowisOpaque = true;
+            lastTileInRowIsOpaque = true;
+          } else {
+            lastTileInRowIsOpaque = false;
           }
         }
 
