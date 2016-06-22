@@ -236,17 +236,20 @@ MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
   const lightMap = {};
 
   const setLightLevel = (coord, level) => {
-    const cxyString = coord.cxyString;
-    if (!lightMap.hasOwnProperty(cxyString)) lightMap[cxyString] = {};
+    if (!lightMap.hasOwnProperty(coord.cx)) lightMap[coord.cx] = {};
+    const cxObj = lightMap[coord.cx];
+    if (!cxObj.hasOwnProperty(coord.cy)) cxObj[coord.cy] = {};
 
     const index = (coord.ty * this.chunkWidth) + coord.tx;
-    lightMap[cxyString][index] = level;
+    cxObj[coord.cy][index] = level;
   };
 
   // TODO: don't let this throw on a bad chunk
   const isOpaque = (coord) => {
     // Try to get the chunk from chunkCatalog
-    const chunk = chunkCatalog[coord.cxyString];
+    const cxObj = chunkCatalog[coord.cx];
+    if (!cxObj) return null;
+    const chunk = cxObj[coord.cy];
     if (!chunk) return null;
 
     // Cheack Each Layer
