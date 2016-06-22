@@ -232,6 +232,7 @@ MapClass.prototype.losCoordGenerator = function*(startCtxy, direction, radius = 
 //
 MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
 
+  const LIGHT_LEVEL = 180;
   const lightMap = {};
 
   const setLightLevel = (coord, level) => {
@@ -255,6 +256,8 @@ MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
     }
     return false;
   };
+
+  setLightLevel(new Coord(startCtxy), LIGHT_LEVEL);
 
   for (const dir of ['n', 's', 'e', 'w']) {
 
@@ -294,51 +297,63 @@ MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
         const a3 = (w === width - 1) ? 1 : (w * 2 + 2) * div;
 
         // Check if this tile is obstructed by previous rows
-        let tileIsVisible = true;
 
+        let tileIsVisible = true;
+        let a1Visible = true;
+        let a2Visible = true;
+        let a3Visible = true;
+
+        // This is ugly, and I foolishly optimized for speed
+        // However, it has two advantages:
+        //
+        // 1. Checking if all three angles are blocked by any
+        //    combination of obstacles
+        // 2. Performs minimum number of checks possible
         for (let i = 0; i < obstructedAnglesSize; i++) {
           const [obA1, obA2] = obstructedAngles[i];
 
-          // is the center of the tile obstructed?
-          if (a2 > obA1 && a2 < obA2) {
-            // cant see center = cant see tile
-            tileIsVisible = false;
-            break;
+          // check if first Angle is blocked
+          if  (a1Visible && a1 >= obA1 && a1 <= obA2) {
+            a1Visible = false;
+            if (!a2Visible && !a3Visible) { tileIsVisible = false; break; }
           }
-          // The center of the tile is visible.
-          // if both angles are obstructed, the tile is obstructed
-          if ((a1 > obA1 && a1 < obA2) && (a3 > obA1 && a3 < obA2)) {
-            tileIsVisible = false;
-            break;
+          // check if center is blocked
+          if  (a2Visible && a2 >= obA1 && a2 <= obA2) {
+            a2Visible = false;
+            if (!a1Visible && !a3Visible) { tileIsVisible = false; break; }
+          }
+          //  check if last Angle is blocked
+          if  (a3Visible && a3 >= obA1 && a3 <= obA2) {
+            a3Visible = false;
+            if (!a1Visible && !a2Visible) { tileIsVisible = false; break; }
           }
         }
 
-        // We now know if the tile is obstructed (or not). If it
-        // is not obstructed, check if it is obstructing other
-        // tiles. We assume that if the tile is not visible, it
-        // is not capable of obstructing tiles on deeper levels.
+        // We now know if the tile is obstructed (or not). Even
+        // if it is obstructed, we still need to check if it is
+        // obstructing other tiles.
 
         const coord = gen.next().value; // we must make sure this gets called every step of the way
+
+        // mark the tile as visible in our results
         if (tileIsVisible) {
+          setLightLevel(coord, LIGHT_LEVEL);
+        }
 
-          // mark the tile as visible in our results
-          setLightLevel(coord, 222);
-
-          if (isOpaque(coord)) {
-            // If the last tile in the row was opaque, we do not
-            // need to create another entry in the array of
-            // obstructed angles. We can just increase the size
-            // of the last entry.
-            if (lastTileInRowIsOpaque) {
-              obstructedAngles[obstructedAngles.length - 1][1] = a3;
-            } else {
-              obstructedAngles.push([a1, a3]);
-              numObstaclesOnThisRow++;
-            }
-            lastTileInRowIsOpaque = true;
+        if (isOpaque(coord)) {
+          // If the last tile in the row was opaque, we do not
+          // need to create another entry in the array of
+          // obstructed angles. We can just increase the size
+          // of the last entry.
+          if (lastTileInRowIsOpaque) {
+            obstructedAngles[obstructedAngles.length - 1][1] = a3;
           } else {
-            lastTileInRowIsOpaque = false;
+            obstructedAngles.push([a1, a3]);
+            numObstaclesOnThisRow++;
           }
+          lastTileInRowIsOpaque = true;
+        } else {
+          lastTileInRowIsOpaque = false;
         }
 
         if (++w >= width) {
