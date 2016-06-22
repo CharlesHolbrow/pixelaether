@@ -315,8 +315,12 @@ MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
         for (let i = 0; i < obstructedAnglesSize; i++) {
           const [obA1, obA2] = obstructedAngles[i];
 
-          // check if first Angle is blocked
-          if  (a1Visible && a1 >= obA1 && a1 <= obA2) {
+          // Check if first Angle is blocked
+          // a1 uses: >=, <
+          // a2 uses: >=, <=
+          // a3 uses: >=, <
+          // In testing, these produce the cleanest shadows
+          if  (a1Visible && a1 >= obA1 && a1 < obA2) {
             a1Visible = false;
             if (!a2Visible && !a3Visible) { tileIsVisible = false; break; }
           }
@@ -326,7 +330,7 @@ MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
             if (!a1Visible && !a3Visible) { tileIsVisible = false; break; }
           }
           //  check if last Angle is blocked
-          if  (a3Visible && a3 >= obA1 && a3 <= obA2) {
+          if  (a3Visible && a3 > obA1 && a3 <= obA2) {
             a3Visible = false;
             if (!a1Visible && !a2Visible) { tileIsVisible = false; break; }
           }
