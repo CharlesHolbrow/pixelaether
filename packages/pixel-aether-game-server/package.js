@@ -21,7 +21,9 @@ Package.onUse(function(api){
     'game-server-maps',
     'game-server-characters',
     'game-server-tilesets',
-    'rift'
+    'rift',
+    'coord',
+    'light',
   ], 'server');
 
   api.mainModule('./server/launch.coffee', 'server');

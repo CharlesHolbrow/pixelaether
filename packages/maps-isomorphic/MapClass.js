@@ -226,9 +226,6 @@ MapClass.prototype.losCoordGenerator = function*(startCtxy, direction, radius = 
   }
 };
 
-// chunkCatalog is an object where keys are deflated cxy
-// strings, and values are chunks retrived from the chunks
-// collection.
 //
 MapClass.prototype.createLightMap = function(startCtxy, radius, chunkCatalog) {
 
