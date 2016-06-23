@@ -7,7 +7,7 @@ export class LightCatalog {
     this.catalog = {};
   }
 
-  forEach(func) {
+  forEachChunk(func) {
     Object.keys(this.catalog).forEach((cx) => {
       const cxInt = parseInt(cx, 10);
       const cxObj = this.catalog[cx];
@@ -18,8 +18,6 @@ export class LightCatalog {
     });
   }
 
-  // According to stackoverflow, delete during iteration is ok:
-  // http://stackoverflow.com/questions/3463048/is-it-safe-to-delete-an-object-property-while-iterating-over-them
   clean() {
     Object.keys(this.catalog).forEach((cx) => {
       const cxObj = this.catalog[cx];
