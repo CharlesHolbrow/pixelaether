@@ -1,9 +1,9 @@
 import { Coord } from 'meteor/coord';
 
 // LightMap stores the projection of one or more light sources.
-// Light levels are stored in the data two levels deep. The
-// following example of a data object stores a light level of
-// 127 at {cx:3, cy:-1, tx:0, ty:0}
+// Light levels are stored in the .data object two levels deep.
+// The following example of a data object stores a light level
+// of 127 at {cx:3, cy:-1, tx:0, ty:0}
 // note that tile indexes are rasterized the same as they are
 // stored in chunks.
 //
@@ -113,8 +113,8 @@ export class LightMap {
     //
     // obstructionCompass['n'][3]
     //
-    // However, it does not gaurantee that the value storedthere
-    // is defined. Notice that the first row that we check is
+    // However, it does not gaurantee that the value stored
+    // there is defined. Becuase the first row that we check is
     // considered index = 1, we initialize each array with two
     // zeros instead of one.
     rowIndexCompass    = { n: [0, 0], s: [0, 0], e: [0, 0], w: [0, 0] };
@@ -161,7 +161,7 @@ export class LightMap {
 
         let w = 0;
 
-        let lastTileInRowIsOpaque = false;
+        let previousTileInRowIsOpaque = false;
 
         const rowStopIndex = compassDirRowIndices[r];
 
@@ -188,7 +188,7 @@ export class LightMap {
           let a2Visible = true;
           let a3Visible = true;
 
-          // This loop complex, but` has two advantages:
+          // This loop complex, but has two advantages:
           //
           // 1. It checks if all three angles are blocked by any
           //    combination of obstacles
@@ -200,7 +200,7 @@ export class LightMap {
             // a1 uses: >=, <
             // a2 uses: >=, <=
             // a3 uses: >=, <
-            // In testing, these produce the cleanest shadows
+            // In testing, these produce symetrical shadows
             if  (a1Visible && a1 >= obA1 && a1 < obA2) {
               a1Visible = false;
               if (!a2Visible && !a3Visible) { tileIsVisible = false; break; }
@@ -240,14 +240,14 @@ export class LightMap {
             // need to create another entry in the array of
             // obstructed angles. We can just increase the size
             // of the last entry.
-            if (lastTileInRowIsOpaque) {
+            if (previousTileInRowIsOpaque) {
               compassDirAngles[compassDirAngles.length - 1][1] = a3;
             } else {
               compassDirAngles.push([a1, a3]);
             }
-            lastTileInRowIsOpaque = true;
+            previousTileInRowIsOpaque = true;
           } else {
-            lastTileInRowIsOpaque = false;
+            previousTileInRowIsOpaque = false;
           }
 
           if (++w >= width) {
