@@ -1,35 +1,50 @@
 import { Coord } from 'meteor/coord';
 
+// LightMap stores the projection of one or more light sources.
+// Light levels are stored in the data two levels deep. The
+// following example of a data object stores a light level of
+// 127 at {cx:3, cy:-1, tx:0, ty:0}
+// note that tile indexes are rasterized the same as they are
+// stored in chunks.
+//
+// this.data = {
+//   '3': {
+//     '-1': {0: 127}
+//   }
+// }
+
 export class LightCatalog {
-  // all inputs are an integer number of tiles
+
   constructor(map) {
-    this.map     = map;
-    this.catalog = {};
+    this.map  = map;
+    this.data = {};
   }
 
   forEachChunk(func) {
-    Object.keys(this.catalog).forEach((cx) => {
+    Object.keys(this.data).forEach((cx) => {
       const cxInt = parseInt(cx, 10);
-      const cxObj = this.catalog[cx];
+      const cxObj = this.data[cx];
       Object.keys(cxObj).forEach((cy) => {
         const cyInt = parseInt(cy, 10);
+        // Note that the first argument is not a chunk. It is a
+        // lightMap for the chunk at the specified cxy coord
         func(cxObj[cy], cxInt, cyInt);
       });
     });
   }
 
   clean() {
-    Object.keys(this.catalog).forEach((cx) => {
-      const cxObj = this.catalog[cx];
+    Object.keys(this.data).forEach((cx) => {
+      const cxObj = this.data[cx];
       Object.keys(cxObj).forEach((cy) => {
         if (Object.keys(cxObj[cy]).length === 0) delete cxObj[cy];
       });
-      if (Object.keys(this.catalog[cx]).length === 0) delete this.catalog[cx];
+      if (Object.keys(this.data[cx]).length === 0) delete this.data[cx];
     });
   }
 
   setLevel(ctxy, level) {
-    const obj = this.catalog[ctxy.cx][ctxy.cy];
+    const obj = this.data[ctxy.cx][ctxy.cy];
     const tileIndex = ctxy.ty * this.map.chunkWidth + ctxy.tx;
     obj[tileIndex] = level;
   }
@@ -57,12 +72,12 @@ export class LightCatalog {
 
     // create any missing arrays
     for (let cx = minCx; cx <= maxCx; cx++) {
-      if (!this.catalog.hasOwnProperty(cx)) {
-        this.catalog[cx] = {};
+      if (!this.data.hasOwnProperty(cx)) {
+        this.data[cx] = {};
       }
       for (let cy = minCy; cy <= maxCy; cy++) {
-        if (!this.catalog[cx].hasOwnProperty(cy)) {
-          this.catalog[cx][cy] = {};
+        if (!this.data[cx].hasOwnProperty(cy)) {
+          this.data[cx][cy] = {};
         }
       }
     }
@@ -71,12 +86,39 @@ export class LightCatalog {
 
 export class LightMap {
 
-  static createLightCatalog(map, startCtxy, radius, chunkCatalog) {
+  constructor() {
+    this.obstructionCompass = { n: [], s: [], e: [], w: [] };
+  }
+
+  // generate entirely new lightCatalog
+  createLightCatalog(map, startCtxy, radius, chunkCatalog) {
 
     if (map.incomplete) {
       console.error('cannot createLightMap on incomplete map');
       return;
     }
+
+    // For each quadrant, we have an array of arrays. Each inner
+    // array contians an angle range, [min, max]
+    obstructionCompass = { n: [], s: [], e: [], w: [] };
+
+    // Each array above stores obstructed angles for all rows.
+    // We want to track which angles ranges refer to which rows.
+    //
+    // Example:
+    //
+    // rowIndexCompass['n'][4] = 3
+    //
+    // This would mean that obstacles on the 4th row begin at
+    //
+    // obstructionCompass['n'][3]
+    //
+    // However, it does not gaurantee that the value storedthere
+    // is defined. Notice that the first row that we check is
+    // considered index = 1, we initialize each array with two
+    // zeros instead of one.
+    rowIndexCompass    = { n: [0, 0], s: [0, 0], e: [0, 0], w: [0, 0] };
+
 
     const LIGHT_LEVEL = 180;
     const lightCatalog = new LightCatalog(map);
@@ -104,10 +146,9 @@ export class LightMap {
 
     for (const dir of ['n', 's', 'e', 'w']) {
 
-      const obstructedAngles = [];
-      let obstructedAnglesSize = 0;
-
       const gen = map.losCoordGenerator(startCtxy, dir, radius);
+      const compassDirAngles      = obstructionCompass[dir];
+      const compassDirRowIndices  = rowIndexCompass[dir];
 
       // iterate over each row
       for (let r = 1; r <= radius; r++) {
@@ -120,8 +161,9 @@ export class LightMap {
 
         let w = 0;
 
-        let numObstaclesOnThisRow = 0;
         let lastTileInRowIsOpaque = false;
+
+        const rowStopIndex = compassDirRowIndices[r];
 
         while (true) {
 
@@ -146,14 +188,13 @@ export class LightMap {
           let a2Visible = true;
           let a3Visible = true;
 
-          // This is ugly, and I foolishly optimized for speed
-          // However, it has two advantages:
+          // This loop complex, but` has two advantages:
           //
-          // 1. Checking if all three angles are blocked by any
+          // 1. It checks if all three angles are blocked by any
           //    combination of obstacles
-          // 2. Performs minimum number of checks possible
-          for (let i = 0; i < obstructedAnglesSize; i++) {
-            const [obA1, obA2] = obstructedAngles[i];
+          // 2. It performs minimum number of checks possible
+          for (let i = 0; i < rowStopIndex; i++) {
+            const [obA1, obA2] = compassDirAngles[i];
 
             // Check if first Angle is blocked
             // a1 uses: >=, <
@@ -177,7 +218,7 @@ export class LightMap {
           }
 
           // We now know if the tile is obstructed (or not). Even
-          // if it is obstructed, we still need to check if it is
+          // if it is obstructed, we still check if it is
           // obstructing other tiles.
 
           // we must make sure this gets called every step of the way
@@ -185,7 +226,13 @@ export class LightMap {
 
           // mark the tile as visible in our results
           if (tileIsVisible) {
-            lightCatalog.setLevel(coord, LIGHT_LEVEL);
+            // The light level of tiles on the diagonal can be
+            // set by two different quadrants. Both quadrants
+            // should set it to the same level. The 'e' and 'w'
+            // quadrants trust that the light level will be set
+            // by the 'n' and 's' quadrants
+            if ((dir === 'n' || dir === 's') || (a1 !== 0 && a3 !== 1))
+              lightCatalog.setLevel(coord, LIGHT_LEVEL);
           }
 
           if (isOpaque(coord)) {
@@ -194,10 +241,9 @@ export class LightMap {
             // obstructed angles. We can just increase the size
             // of the last entry.
             if (lastTileInRowIsOpaque) {
-              obstructedAngles[obstructedAngles.length - 1][1] = a3;
+              compassDirAngles[compassDirAngles.length - 1][1] = a3;
             } else {
-              obstructedAngles.push([a1, a3]);
-              numObstaclesOnThisRow++;
+              compassDirAngles.push([a1, a3]);
             }
             lastTileInRowIsOpaque = true;
           } else {
@@ -206,11 +252,11 @@ export class LightMap {
 
           if (++w >= width) {
             // start a new row
-            obstructedAnglesSize += numObstaclesOnThisRow;
-            numObstaclesOnThisRow = 0;
+            // On our next row, include obstacles up to, but not including this index;
+            compassDirRowIndices[r + 1] = compassDirAngles.length;
             break;
           }
-        }
+        } // finished iterating over a row
       }
     }
     return lightCatalog;
