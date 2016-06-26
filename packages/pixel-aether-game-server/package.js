@@ -23,7 +23,6 @@ Package.onUse(function(api){
     'game-server-tilesets',
     'rift',
     'coord',
-    'light',
   ], 'server');
 
   api.mainModule('./server/launch.coffee', 'server');
