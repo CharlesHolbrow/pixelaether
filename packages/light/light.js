@@ -13,11 +13,21 @@ import { Coord } from 'meteor/coord';
 //   }
 // }
 
-export class LightCatalog {
+// Catalog must be agnostic of the kind of array
+export class Catalog {
 
-  constructor(map) {
+  constructor(map, ArrayType = null) {
     this.map  = map;
     this.data = {};
+    this.ArrayType = ArrayType;
+  }
+
+  createChunkObject() {
+    if (!this.Class)
+      return {};
+    if (this.map.incomplete)
+      throw new Error('Cannot create new array with incomplete map');
+    return new this.ArrayType(this.map.chunkSize);
   }
 
   forEachChunk(func) {
@@ -43,10 +53,29 @@ export class LightCatalog {
     });
   }
 
-  setLevel(ctxy, level) {
+  set(ctxy, level) {
     const obj = this.data[ctxy.cx][ctxy.cy];
     const tileIndex = ctxy.ty * this.map.chunkWidth + ctxy.tx;
     obj[tileIndex] = level;
+  }
+
+  ensureChunk(cx, cy) {
+    if (typeof cx !== 'number' || typeof cy !== 'number')
+      throw new Error('invalid cxy');
+
+    if (!this.data.hasOwnProperty(cx)) {
+      this.data[cx] = {};
+    }
+    const cxObj = this.data[cx];
+    if (!cxObj.hasOwnProperty(cy))
+      cxObj[cy] = this.createChunkObject();
+  }
+
+  removeChunk(cx, cy) {
+    if (!this.data.hasOwnProperty(cx)) return;
+    const cxObj = this.data[cx];
+    if (!cxObj.hasOwnProperty(cy)) return;
+    delete cxObj[cy];
   }
 
   // maxRadius is an integer number of tiles
@@ -77,7 +106,7 @@ export class LightCatalog {
       }
       for (let cy = minCy; cy <= maxCy; cy++) {
         if (!this.data[cx].hasOwnProperty(cy)) {
-          this.data[cx][cy] = {};
+          this.data[cx][cy] = this.createChunkObject();
         }
       }
     }
@@ -85,10 +114,6 @@ export class LightCatalog {
 }
 
 export class LightMap {
-
-  constructor() {
-    this.obstructionCompass = { n: [], s: [], e: [], w: [] };
-  }
 
   // generate entirely new lightCatalog
   createLightCatalog(map, startCtxy, radius, chunkCatalog) {
@@ -121,7 +146,7 @@ export class LightMap {
 
 
     const LIGHT_LEVEL = 180;
-    const lightCatalog = new LightCatalog(map);
+    const lightCatalog = new Catalog(map);
     const startCoord = new Coord(startCtxy);
     startCoord.resolve(map);
     lightCatalog.ensure(startCoord, radius);
@@ -142,7 +167,7 @@ export class LightMap {
       return false;
     };
 
-    lightCatalog.setLevel(startCoord, LIGHT_LEVEL);
+    lightCatalog.set(startCoord, LIGHT_LEVEL);
 
     for (const dir of ['n', 's', 'e', 'w']) {
 
@@ -188,7 +213,7 @@ export class LightMap {
           let a2Visible = true;
           let a3Visible = true;
 
-          // This loop complex, but has two advantages:
+          // This loop is complex, but has two advantages:
           //
           // 1. It checks if all three angles are blocked by any
           //    combination of obstacles
@@ -232,7 +257,7 @@ export class LightMap {
             // quadrants trust that the light level will be set
             // by the 'n' and 's' quadrants
             if ((dir === 'n' || dir === 's') || (a1 !== 0 && a3 !== 1))
-              lightCatalog.setLevel(coord, LIGHT_LEVEL);
+              lightCatalog.set(coord, LIGHT_LEVEL);
           }
 
           if (isOpaque(coord)) {
