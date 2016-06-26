@@ -23,7 +23,7 @@ export class Catalog {
   }
 
   createChunkObject() {
-    if (!this.Class)
+    if (!this.ArrayType)
       return {};
     if (this.map.incomplete)
       throw new Error('Cannot create new array with incomplete map');
@@ -57,6 +57,15 @@ export class Catalog {
     const obj = this.data[ctxy.cx][ctxy.cy];
     const tileIndex = ctxy.ty * this.map.chunkWidth + ctxy.tx;
     obj[tileIndex] = level;
+  }
+
+  get(ctxy) {
+    const cxObj = this.data[ctxy.cx];
+    if (!cxObj) return null;
+    const chunk = cxObj[ctxy.cy];
+    if (!chunk) return null;
+    index = ctxy.ty * this.map.chunkWidth  + ctxy.tx;
+    return chunk[index];
   }
 
   ensureChunk(cx, cy) {
@@ -116,7 +125,7 @@ export class Catalog {
 export class LightMap {
 
   // generate entirely new lightCatalog
-  createLightCatalog(map, startCtxy, radius, chunkCatalog) {
+  createLightCatalog(map, startCtxy, radius, opacityMap) {
 
     if (map.incomplete) {
       console.error('cannot createLightMap on incomplete map');
@@ -150,23 +159,6 @@ export class LightMap {
     const startCoord = new Coord(startCtxy);
     startCoord.resolve(map);
     lightCatalog.ensure(startCoord, radius);
-
-    // TODO: don't let this throw on a bad chunk
-    const isOpaque = (coord) => {
-      // Try to get the chunk from chunkCatalog
-      const cxObj = chunkCatalog[coord.cx];
-      if (!cxObj) return null;
-      const chunk = cxObj[coord.cy];
-      if (!chunk) return null;
-
-      // Cheack Each Layer
-      for (const layerName of chunk.layerNames) {
-        const index = chunk[layerName][coord.ty * chunk.width + coord.tx];
-        if (map.tileset.prop(index, 'opaque')) return true;
-      }
-      return false;
-    };
-
     lightCatalog.set(startCoord, LIGHT_LEVEL);
 
     for (const dir of ['n', 's', 'e', 'w']) {
@@ -260,7 +252,7 @@ export class LightMap {
               lightCatalog.set(coord, LIGHT_LEVEL);
           }
 
-          if (isOpaque(coord)) {
+          if (opacityMap.get(coord)) {
             // If the last tile in the row was opaque, we do not
             // need to create another entry in the array of
             // obstructed angles. We can just increase the size
