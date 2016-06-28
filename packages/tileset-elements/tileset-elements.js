@@ -30,5 +30,6 @@ TilesetDDS.add({
     path: 16,
     'stone wall': 17,
     sand: 18,
+    fire: 23,
   },
 });

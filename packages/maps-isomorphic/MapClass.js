@@ -128,10 +128,11 @@ MapClass.prototype._queryChunks = function(ctxy) {
   const index = ctxy.ty * this.chunkWidth + ctxy.tx;
 
   if (!chunk) return results;
+  const tiles = chunk[index];
 
-  // get the layer names
-  for (let i = 0; i < chunk.layerNames.length; i++) {
-    const val = chunk[chunk.layerNames[i]][index];
+  // Do not include tiles that are 0 or null
+  for (let i = 0; i < tiles.length; i++) {
+    const val = tiles[i];
     if (val) results.push(val); // don't push zeros
   }
   return results;
@@ -151,20 +152,18 @@ MapClass.prototype.queryNames = function(ctxy) {
   return this.tileset.indicesToNames(results);
 };
 
-MapClass.prototype.setTile = function(ctxy, i, layerName) {
+MapClass.prototype.setTile = function(ctxy, i, level = 0) {
   layerName = layerName || 'ground';
 
   check(i, Match.Integer);
-  check(layerName, String);
+  check(level, Match.Integer);
   this.checkCtxy(ctxy);
 
   const tileIndex = ctxy.ty * this.chunkWidth + ctxy.tx; // convert xy to index
   const options = { $set: {} };
-  options.$set[`${layerName}.${tileIndex}`] = i;
+  options.$set[`${tileIndex}.${level}`] = i;
 
-  // layerNames key in the selector is very important.
-  // prevent users from inserting arbitrary layers into our chunks
-  this.chunks.update({ cx: ctxy.cx, cy: ctxy.cy, layerNames: layerName }, options);
+  this.chunks.update({ cx: ctxy.cx, cy: ctxy.cy }, options);
 };
 
 MapClass.prototype.throw = function(reason) {
