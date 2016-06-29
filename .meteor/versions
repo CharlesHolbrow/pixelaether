@@ -47,6 +47,7 @@ livedata@1.0.18
 localstorage@1.0.11
 logging@1.0.13_1
 map-forest@0.0.1
+map-main@0.0.1
 maps-isomorphic@0.0.0
 meteor@1.1.15_1
 meteor-base@1.0.4

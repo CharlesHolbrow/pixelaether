@@ -1,8 +1,8 @@
 Package.describe({
-  summary: 'Serve a PixelAether universe'
+  summary: 'Serve a PixelAether universe',
 });
 
-Package.onUse(function(api){
+Package.onUse(function(api) {
   api.use(['coffeescript',
     'urlz',
     'tracker',
@@ -22,6 +22,7 @@ Package.onUse(function(api){
     'game-server-characters',
     'game-server-tilesets',
     'rift',
+    'map-main',
     'coord',
   ], 'server');
 

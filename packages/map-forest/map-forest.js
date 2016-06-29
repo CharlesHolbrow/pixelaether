@@ -8,20 +8,10 @@ MapDDS.add({
 });
 
 MapDDS.get('forest').onNewChunk(function(chunk, callback) {
-  chunk.layerNames.push('ground');
-  chunk.layerNames.push('plants');
-  chunk.ground = [];
-  chunk.plants = [];
   for (let i = 0; i < this.chunkSize; i++) {
     const tiles = [];
-    chunk.ground[i] = 10;
     tiles.push(10);
-    if (!Math.floor(Math.random() * 2)) { // one in two
-      chunk.plants[i] = 23;  // fire
-      tiles.push(1); // tree
-    } else {
-      chunk.plants[i] = 0;
-    }
+    if (!Math.floor(Math.random() * 2)) tiles.push(1); // tree
     chunk[i] = tiles;
   }
   callback(null, chunk);
