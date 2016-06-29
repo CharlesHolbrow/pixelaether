@@ -1,11 +1,5 @@
 // Static Maps
 MapDDS.add({
-  name: 'second',
-  tilesetName: 'elements',
-  chunkWidth: 16,
-  chunkHeight: 8,
-});
-MapDDS.add({
   name: 'third',
   tilesetName: 'elements',
   chunkWidth: 4,

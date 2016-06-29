@@ -72,6 +72,8 @@ MapClass.prototype.createNewChunk = function(cx, cy) {
       }
     }
 
+    chunk._id = `${chunk.cx.toString(36)}_${chunk.cy.toString(36)}`;
+
     //  On completion, insert
     self.chunks.upsert({ cx: chunk.cx, cy: chunk.cy, mapName: chunk.mapName }, chunk, (err) => {
       if (err) console.warn('When creating chunk:', chunk, 'an error occured:', err);
