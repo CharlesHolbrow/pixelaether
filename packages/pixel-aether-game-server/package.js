@@ -24,6 +24,7 @@ Package.onUse(function(api) {
     'rift',
     'map-main',
     'coord',
+    'time-of-day',
   ], 'server');
 
   api.mainModule('./server/launch.coffee', 'server');
