@@ -1,6 +1,5 @@
 import { AetherRift } from 'meteor/rift';
 
-console.log('here');
 
 AetherRift.methods({
 
