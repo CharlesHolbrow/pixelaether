@@ -158,6 +158,12 @@ AetherRift.listGameServerIds = function(){
 };
 
 AetherRift.methods = function(methodsByName){
+
+  if (Meteor.isServer) {
+    Meteor.methods.apply(Meteor, arguments);
+    return;
+  }
+
   if (typeof methodsByName !== 'object'){
     throw new Error('Rift.methods requires an object as an argument');
   }

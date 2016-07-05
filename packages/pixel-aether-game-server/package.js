@@ -21,6 +21,7 @@ Package.onUse(function(api) {
     'game-server-maps',
     'game-server-characters',
     'game-server-tilesets',
+    'game-server-players',
     'rift',
     'map-main',
     'coord',

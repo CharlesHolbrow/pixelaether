@@ -1,11 +1,12 @@
 Package.describe({
-  summary: 'Serve PixelAether characters'
+  summary: 'Serve PixelAether characters',
 });
 
-Package.onUse(function(api){
+Package.onUse(function(api) {
   // the default character tilesetSelector refers uses the
   // tileset-characters tileset which is named 'characters'.
   api.imply('tileset-characters');
+  api.use('ecmascript');
   api.use(
     [
       'check',
@@ -16,7 +17,7 @@ Package.onUse(function(api){
       'random',
       'game-server-maps',
       'game-servers',
-      'rift'
+      'rift',
     ],
     'server'
   );
@@ -26,13 +27,15 @@ Package.onUse(function(api){
       'Characters.coffee',
       'publication.js',
       'methods.js',
-      'methods.coffee'
+      'methods.coffee',
     ],
     'server'
   );
+
+  api.addFiles('methods-isomorphic.js');
 });
 
-Package.onTest(function(api){
+Package.onTest(function(api) {
   api.use(['coffeescript', 'tinytest', 'maps', 'tilesets', 'characters-server']);
   api.export('Maps', 'client');
   api.addFiles(['test/test-characters-server.coffee'], 'server');
