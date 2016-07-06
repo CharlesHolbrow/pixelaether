@@ -42,4 +42,16 @@ Meteor.methods({
     }
   },
 
+
+  possessCharacter: function(charId) {
+    if (!this.userId)
+      throw new Meteor.Error('Anonymous user tried to possess a character');
+
+    check(charId, String);
+    const selector = { _id: charId, ownerId: null };
+    const update   = { $set: { ownerId: this.userId } };
+    const numUpdated = Characters.update(selector, update);
+    return !!numUpdated;
+  },
+
 }); // Meteor.methods
