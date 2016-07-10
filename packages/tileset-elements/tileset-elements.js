@@ -33,3 +33,6 @@ TilesetDDS.add({
     fire: 23,
   },
 });
+
+const elements = TilesetDDS.get('elements');
+elements.set('lava', 'lightRadius', 4);

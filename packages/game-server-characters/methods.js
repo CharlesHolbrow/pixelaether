@@ -48,6 +48,7 @@ Meteor.methods({
       throw new Meteor.Error('Anonymous user tried to possess a character');
 
     check(charId, String);
+    // select if ownerId is there (and null) OR not there at all
     const selector = { _id: charId, ownerId: null };
     const update   = { $set: { ownerId: this.userId } };
     const numUpdated = Characters.update(selector, update);
