@@ -1,8 +1,6 @@
 TilesetClass.prototype.setIndividual = function(tileIndex, propertyName, value) {
 
-  if (!this.hasOwnProperty('tileProperties'))
-    this.tileProperties = {};
-
+  // Create an array to store propertyName in if needed;
   if (!this.tileProperties.hasOwnProperty(propertyName))
     this.tileProperties[propertyName] = new Array(this.height * this.width);
 
