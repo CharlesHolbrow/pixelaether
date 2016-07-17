@@ -35,4 +35,5 @@ TilesetDDS.add({
 });
 
 const elements = TilesetDDS.get('elements');
-elements.set('lava', 'lightRadius', 4);
+elements.set('lava', 'lightRadius', 3);
+elements.set('ice', 'lightRadius', 1);
