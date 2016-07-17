@@ -43,9 +43,9 @@ Meteor.methods({
   },
 
 
-  possessCharacter: function(charId) {
+  ownCharacter: function(charId) {
     if (!this.userId)
-      throw new Meteor.Error('Anonymous user tried to possess a character');
+      throw new Meteor.Error('logged out', 'You Must Be Logged In to possess a character');
 
     check(charId, String);
     // select if ownerId is there (and null) OR not there at all
