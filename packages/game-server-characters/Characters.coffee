@@ -101,6 +101,9 @@ defaultTS =
 # If conf includes an _id, this method assumes that we have
 # already verified the _id - i.e. the user that is creating
 # this character owns the character on the specified server
+#
+# This mutates the characters collection, but NOT the
+# <mapName>_map_characters collection.
 Characters.add = (conf)->
   # verify the configuration spec
   check conf, characterAddPattern

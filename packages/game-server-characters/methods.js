@@ -43,9 +43,10 @@ Meteor.methods({
   },
 
 
+  // Become the owner of a character (if it has no owner)
   ownCharacter: function(charId) {
     if (!this.userId)
-      throw new Meteor.Error('logged out', 'You Must Be Logged In to possess a character');
+      throw new Meteor.Error('logged out', 'You Must Be Logged In to own a character');
 
     check(charId, String);
     // select if ownerId is there (and null) OR not there at all
