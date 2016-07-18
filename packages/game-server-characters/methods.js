@@ -12,6 +12,8 @@ const ctpxyPattern = {
 // https://github.com/meteor/meteor/issues/1834
 const characterPattern = Match.ObjectIncluding({ _id: Match.Any });
 
+const optionalCharIdPattern = Match.OneOf(undefined, String);
+
 Meteor.methods({
 
   moveCharacterTo: function(mapChar, ctpxy) {
@@ -42,11 +44,10 @@ Meteor.methods({
     }
   },
 
-
   // Become the owner of a character (if it has no owner)
   ownCharacter: function(charId) {
     if (!this.userId)
-      throw new Meteor.Error('logged out', 'You Must Be Logged In to own a character');
+      throw new Meteor.Error('logged out', 'You must be logged in to own a character');
 
     check(charId, String);
     // select if ownerId is there (and null) OR not there at all
