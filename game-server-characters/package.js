@@ -16,7 +16,7 @@ Package.onUse(function(api) {
       'mongo',
       'random',
       'game-server-maps',
-      'game-servers',
+      'pixelaether:game-servers',
       'rift',
     ],
     'server'

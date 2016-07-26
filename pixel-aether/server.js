@@ -4,7 +4,6 @@ export { Maps }             from 'meteor/game-server-maps';
 export { MapDDS }           from 'meteor/game-server-maps';
 export { Players }          from 'meteor/game-server-players';
 export { TilesetDDS }       from 'meteor/game-server-tilesets';
-export { GameServers }      from 'meteor/game-servers';
 export { Rift }             from 'meteor/rift';
 export { AetherRift }       from 'meteor/rift';
 export { GameTicker }       from 'meteor/time-of-day';

@@ -12,13 +12,13 @@ Package.onUse(function(api) {
   api.imply('pixelaether:chunk');
   api.imply('pixelaether:coord');
   api.imply('pixelaether:urlz');
+  api.imply('pixelaether:game-servers');
   api.use('dds-server');
   api.use('game-server-characters');
   api.use('game-server-maps');
   api.use('game-server-maps');
   api.use('game-server-players');
   api.use('game-server-tilesets');
-  api.use('game-servers');
   api.use('rift');
   api.use('rift');
   api.use('time-of-day');

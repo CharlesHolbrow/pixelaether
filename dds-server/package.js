@@ -3,7 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.use(['pixelaether:urlz', 'random', 'check', 'ecmascript', 'es5-shim', 'game-servers'], 'server');
+  api.use(['pixelaether:urlz', 'random', 'check', 'ecmascript', 'es5-shim', 'pixelaether:game-servers'], 'server');
   api.export('DDS', 'server');
   api.addFiles(['dds.js'], 'server');
 });

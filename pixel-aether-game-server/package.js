@@ -11,7 +11,7 @@ Package.onUse(function(api) {
     'ongoworks:ddp-login@0.2.1',
     'es5-shim',
     'ecmascript',
-    'game-servers',
+    'pixelaether:game-servers',
     'rift',
     'accounts-password',
     'ddp']);

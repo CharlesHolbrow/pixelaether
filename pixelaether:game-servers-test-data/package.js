@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'game-servers-test-data',
+  name: 'pixelaether:game-servers-test-data',
   version: '0.0.1',
   summary: 'Subsitute Meteor.settings when testing',
   testOnly: true,

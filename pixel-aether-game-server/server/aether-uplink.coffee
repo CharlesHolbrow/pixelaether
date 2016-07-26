@@ -16,7 +16,7 @@ with our url
 
 ###
 
-{ GameServers } = require 'meteor/game-servers'
+{ GameServers } = require 'meteor/pixelaether:game-servers'
 { Rift }        = require 'meteor/rift'
 { DDP }         = require 'meteor/ddp'
 

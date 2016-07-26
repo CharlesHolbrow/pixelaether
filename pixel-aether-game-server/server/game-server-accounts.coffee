@@ -4,7 +4,7 @@
 { Random }        = require 'meteor/random'
 { check }         = require 'meteor/check'
 { _ }             = require 'meteor/underscore'
-{ GameServers }   = require 'meteor/game-servers'
+{ GameServers }   = require 'meteor/pixelaether:game-servers'
 { DDP }           = require 'meteor/ddp'
 { AetherUplink }  = require './aether-uplink.coffee'
 
