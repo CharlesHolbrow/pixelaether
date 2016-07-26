@@ -1,4 +1,5 @@
 Package.describe({
+  name: 'pixelaether:coord',
   summary: 'Describe a coordinate position on an arbitrary Pixel Aether map',
 });
 

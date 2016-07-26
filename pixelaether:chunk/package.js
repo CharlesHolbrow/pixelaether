@@ -2,6 +2,7 @@ Package.describe({
   name: 'pixelaether:chunk',
   version: '0.0.1',
   summary: 'Chunk helper methods',
+  documentation: null,
 });
 
 Package.onUse(function(api) {

@@ -1,6 +1,3 @@
-export { Chunk }            from 'meteor/chunk';
-export { Coord }            from 'meteor/coord';
-export { ReactiveCoord }    from 'meteor/coord';
 export { TilesetClass }     from 'meteor/tilesets-isomorphic';
 export { Rift }             from 'meteor/rift';
 export { AetherRift }       from 'meteor/rift';

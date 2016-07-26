@@ -9,8 +9,8 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.4');
   api.use('ecmascript');
-  api.use('chunk');
-  api.use('coord');
+  api.imply('pixelaether:chunk');
+  api.imply('pixelaether:coord');
   api.use('dds-server');
   api.use('game-server-characters');
   api.use('game-server-maps');
@@ -21,6 +21,7 @@ Package.onUse(function(api) {
   api.use('rift');
   api.use('rift');
   api.use('time-of-day');
+
   api.mainModule('server.js', 'server');
   api.mainModule('client.js', 'client');
 });

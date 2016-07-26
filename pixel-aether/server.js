@@ -1,6 +1,3 @@
-export { Chunk }            from 'meteor/chunk';
-export { Coord }            from 'meteor/coord';
-export { ReactiveCoord }    from 'meteor/coord';
 export { DDS }              from 'meteor/dds-server';
 export { Characters }       from 'meteor/game-server-characters';
 export { Maps }             from 'meteor/game-server-maps';

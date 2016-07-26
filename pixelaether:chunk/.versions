@@ -1,0 +1,10 @@
+babel-compiler@6.9.0
+babel-runtime@0.1.10
+ecmascript@0.5.7
+ecmascript-runtime@0.3.12
+meteor@1.2.16
+modules@0.7.5
+modules-runtime@0.7.5
+pixelaether:chunk@0.0.1
+promise@0.8.3
+underscore@1.0.9
