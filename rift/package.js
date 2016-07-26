@@ -12,7 +12,7 @@ Package.on_use(function(api){
     'meteor',
     'reactive-var',
     'tracker',
-    'urlz',
+    'pixelaether:urlz',
     'underscore',
     'mongo',
     'ddp',

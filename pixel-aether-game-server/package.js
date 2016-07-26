@@ -4,7 +4,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.use(['coffeescript',
-    'urlz',
+    'pixelaether:urlz',
     'tracker',
     'underscore',
     'meteor',

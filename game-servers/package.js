@@ -15,7 +15,7 @@ Package.onUse(function(api) {
   api.use('game-servers-test-data');
 
   // isomorphic
-  api.use(['es5-shim', 'coffeescript', 'check', 'mongo', 'random', 'urlz', 'underscore', 'ddp', 'accounts-base', 'ecmascript', 'tracker']);
+  api.use(['es5-shim', 'coffeescript', 'check', 'mongo', 'random', 'pixelaether:urlz', 'underscore', 'ddp', 'accounts-base', 'ecmascript', 'tracker']);
 
   // server
   api.use('sha', 'server');

@@ -2,7 +2,7 @@
 ------------------------------------------------------------*/
 Package.describe({
   summary: 'Manipulate URLs',
-  internal: false
+  name: 'pixelaether:urlz',
 });
 
 Package.onUse(function(api){

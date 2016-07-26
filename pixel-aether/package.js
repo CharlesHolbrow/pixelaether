@@ -11,6 +11,7 @@ Package.onUse(function(api) {
   api.use('ecmascript');
   api.imply('pixelaether:chunk');
   api.imply('pixelaether:coord');
+  api.imply('pixelaether:urlz');
   api.use('dds-server');
   api.use('game-server-characters');
   api.use('game-server-maps');

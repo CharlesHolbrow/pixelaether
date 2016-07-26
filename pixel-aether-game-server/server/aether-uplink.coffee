@@ -19,7 +19,6 @@ with our url
 { GameServers } = require 'meteor/game-servers'
 { Rift }        = require 'meteor/rift'
 { DDP }         = require 'meteor/ddp'
-{ urlz }        = require 'meteor/urlz'
 
 serverNamePattern = /^[a-z][a-z0-9\-_ ]{1,62}[a-z0-9](DEV)?$/
 serverNameDescription = """
