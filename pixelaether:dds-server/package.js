@@ -1,5 +1,6 @@
 Package.describe({
-  summary: 'Distributed Data Store on the server'
+  summary: 'Distributed Data Store on the server',
+  name: 'pixelaether:dds-server',
 });
 
 Package.onUse(function(api){

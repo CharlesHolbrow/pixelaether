@@ -3,7 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.use(['mongo', 'dds-server', 'game-server-tilesets', 'pixelaether:urlz', 'deps', 'underscore', 'maps-isomorphic', 'mongo', 'check', 'ecmascript'], 'server');
+  api.use(['mongo', 'pixelaether:dds-server', 'game-server-tilesets', 'pixelaether:urlz', 'deps', 'underscore', 'maps-isomorphic', 'mongo', 'check', 'ecmascript'], 'server');
   api.export(['MapDDS', 'Maps'], 'server');
   api.addFiles(['MapClass.js', 'MapDDS.js', 'publication.js', 'methods.js'], 'server');
 });

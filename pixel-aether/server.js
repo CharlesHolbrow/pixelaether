@@ -1,4 +1,3 @@
-export { DDS }              from 'meteor/dds-server';
 export { Characters }       from 'meteor/game-server-characters';
 export { Maps }             from 'meteor/game-server-maps';
 export { MapDDS }           from 'meteor/game-server-maps';

@@ -13,7 +13,7 @@ Package.onUse(function(api) {
   api.imply('pixelaether:coord');
   api.imply('pixelaether:urlz');
   api.imply('pixelaether:game-servers');
-  api.use('dds-server');
+  api.imply('pixelaether:dds-server');
   api.use('game-server-characters');
   api.use('game-server-maps');
   api.use('game-server-maps');
