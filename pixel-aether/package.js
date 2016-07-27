@@ -16,9 +16,7 @@ Package.onUse(function(api) {
   api.imply('pixelaether:dds-server');
   api.imply('pixelaether:time-of-day');
   api.imply('pixelaether:rift');
-
-  api.use('game-server-characters');
-  api.use('game-server-maps');
+  api.imply('pixelaether:game-server-characters');
   api.use('game-server-maps');
   api.use('game-server-players');
   api.use('game-server-tilesets');

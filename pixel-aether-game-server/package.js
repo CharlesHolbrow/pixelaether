@@ -17,9 +17,9 @@ Package.onUse(function(api) {
     'ddp']);
 
   api.imply([
+    'pixel-aether',
     'accounts-password',
     'game-server-maps',
-    'game-server-characters',
     'game-server-tilesets',
     'game-server-players',
     'rift',
