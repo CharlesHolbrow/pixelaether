@@ -1,5 +1,7 @@
 Package.describe({
+  name: 'pixelaether:game-server',
   summary: 'Serve a PixelAether universe',
+  version: '0.0.1',
 });
 
 Package.onUse(function(api) {
@@ -16,10 +18,8 @@ Package.onUse(function(api) {
     'accounts-password',
     'ddp']);
 
-  api.imply([
-    'pixelaether:base',
-    'pixelaether:map-main',
-  ], 'server');
+  api.imply('pixelaether:base', 'server');
+  api.imply('pixelaether:map-main', ['client', 'server']);
 
   api.mainModule('./server/launch.coffee', 'server');
 });
