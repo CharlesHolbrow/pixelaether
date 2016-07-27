@@ -1,13 +1,17 @@
 # Pixel Aether Game Server
 
-First, create a [pixelaether.com][] account. You will need your email and password to proceed.
+This repository contains all the packages needed to run a Pixel Aether Server.
 
-```sh
+To, create a [pixelaether.com][] account. You will need your email and password to proceed.
+
+```bash
 # With meteor installed:
-$ git clone git@github.com:CharlesHolbrow/PixelAetherGameServer.git
-$ cd PixelAetherGameServer
+$ meteor create my-server
+$ cd my-server
+$ meteor add pixelaether:game-server
+$ touch pixel.json
 $ meteor --settings pixel.json
-# pixel.json will be auto-generated. You will see an warning message
+# pixel.json will be auto-populate. You will see an warning message
 
 # To proceed:
 # 1. Add your pixelaether.com login credentials to pixel.json
