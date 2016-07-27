@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'pixel-aether',
+  name: 'pixelaether:base',
   version: '0.0.1',
   summary: 'Aggregates pixel-aether exports',
   git: '',

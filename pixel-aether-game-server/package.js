@@ -17,7 +17,7 @@ Package.onUse(function(api) {
     'ddp']);
 
   api.imply([
-    'pixel-aether',
+    'pixelaether:base',
     'accounts-password',
     'game-server-players',
     'pixelaether:map-main',
