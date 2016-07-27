@@ -2,7 +2,7 @@ import { TilesetDDS } from  'meteor/game-server-tilesets';
 
 TilesetDDS.add({
   "name":"characters",
-  "imageUrl": "/packages/tileset-characters/img/characters5x1.png",
+  "imageUrl": "/packages/pixelaether_tileset-characters/img/characters5x1.png",
   "width": 5,
   "height": 1,
   "tileWidth": 28,

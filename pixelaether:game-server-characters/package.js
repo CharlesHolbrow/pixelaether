@@ -5,7 +5,7 @@ Package.describe({
 Package.onUse(function(api) {
   // the default character tilesetSelector uses the
   // tileset-characters tileset which is named 'characters'.
-  api.imply('tileset-characters');
+  api.imply('pixelaether:tileset-characters');
   api.use('ecmascript');
   api.use(
     [

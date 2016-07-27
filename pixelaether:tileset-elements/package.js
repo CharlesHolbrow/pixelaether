@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'tileset-characters',
+  name: 'pixelaether:tileset-elements',
   version: '0.0.1',
   // Brief, one-line summary of the package.
   summary: '',
@@ -12,15 +12,14 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.3.2.4');
-  api.use('ecmascript');
+  api.addAssets('img/elements9x3.png', ['client', 'server']);
   api.use(['ecmascript', 'game-server-tilesets'], 'server');
-  api.addAssets('img/characters5x1.png', ['client', 'server']);
-  api.mainModule('tileset-characters.js', 'server');
+  api.mainModule('tileset-elements.js', 'server');
 });
 
 Package.onTest(function(api) {
   api.use('ecmascript');
   api.use('tinytest');
-  api.use('tileset-characters');
-  api.mainModule('tileset-characters-tests.js');
+  api.use('tileset-elements');
+  api.mainModule('tileset-elements-tests.js');
 });

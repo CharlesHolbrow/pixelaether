@@ -7,5 +7,5 @@ import { name as packageName } from "meteor/tileset-characters";
 // Write your tests here!
 // Here is an example.
 Tinytest.add('tileset-characters - example', function (test) {
-  test.equal(packageName, "tileset-characters");
+  test.equal(packageName, "pixelaether:tileset-characters");
 });

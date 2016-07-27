@@ -3,8 +3,12 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.imply(['tilesets-isomorphic']);
-  api.use(['tilesets-isomorphic', 'pixelaether:dds-server', 'ecmascript'], 'server');
+  api.imply('pixelaether:tilesets-isomorphic');
+
+  api.use('ecmascript', 'server');
+  api.use('pixelaether:tilesets-isomorphic', 'server');
+  api.use('pixelaether:dds-server', 'server');
+
   api.export('TilesetDDS', 'server');
   api.addFiles('TilesetDDS.js', 'server');
 });

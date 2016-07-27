@@ -10,16 +10,17 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.3.2.4');
+  api.versionsFrom('1.4');
   api.use('ecmascript');
 
   // We have to use the tileset dependency so that we gaurantee
   // that we call TilesetDDS.add() before calling MapDDS.add()
-  api.use(['tileset-elements', 'pixelaether:game-server-maps'], 'server');
+  api.use(['pixelaether:tileset-elements', 'pixelaether:game-server-maps'], 'server');
 
   // we have to imply the tileset dependency so that the tileset
   // image will be accessible via url.
-  api.imply('tileset-elements', ['server', 'client']);
+  api.imply('pixelaether:tileset-elements', ['server', 'client']);
+
   api.mainModule('map-forest.js', 'server');
 });
 

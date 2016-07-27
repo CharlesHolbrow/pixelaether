@@ -5,14 +5,16 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.3.4.1');
+  api.versionsFrom('1.4');
   api.use('ecmascript');
 
   // we have to imply the tileset dependency so that the tileset
   // image will be accessible via url.
-  api.imply('tileset-elements', ['server', 'client']);
-  api.use('tileset-elements', 'server');
+  api.imply('pixelaether:tileset-elements', ['server', 'client']);
+
+  api.use('pixelaether:tileset-elements', 'server');
   api.use('pixelaether:game-server-maps', 'server');
+
   api.mainModule('map-main.js', 'server');
 });
 

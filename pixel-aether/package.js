@@ -9,6 +9,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.4');
   api.use('ecmascript');
+
   api.imply('pixelaether:chunk');
   api.imply('pixelaether:coord');
   api.imply('pixelaether:urlz');
@@ -19,6 +20,7 @@ Package.onUse(function(api) {
   api.imply('pixelaether:game-server-characters');
   api.imply('pixelaether:game-server-maps');
   api.imply('pixelaether:maps-isomorphic');
+  api.imply('pixelaether:tilesets-isomorphic');
 
   api.use('game-server-players');
   api.use('game-server-tilesets');
