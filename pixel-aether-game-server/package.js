@@ -5,26 +5,22 @@ Package.describe({
 Package.onUse(function(api) {
   api.use(['coffeescript',
     'pixelaether:urlz',
+    'pixelaether:game-servers',
+    'pixelaether:rift',
+    'ongoworks:ddp-login@0.2.1',
     'tracker',
     'underscore',
     'meteor',
-    'ongoworks:ddp-login@0.2.1',
     'es5-shim',
     'ecmascript',
-    'pixelaether:game-servers',
-    'rift',
     'accounts-password',
     'ddp']);
 
   api.imply([
     'pixel-aether',
     'accounts-password',
-    'game-server-tilesets',
     'game-server-players',
-    'rift',
     'map-main',
-    'coord',
-    'time-of-day',
   ], 'server');
 
   api.mainModule('./server/launch.coffee', 'server');

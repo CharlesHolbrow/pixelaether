@@ -3,7 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api){
-  api.use(['check', 'ecmascript', 'es5-shim', 'coord']);
+  api.use(['check', 'ecmascript', 'es5-shim', 'pixelaether:coord']);
   api.export('MapClass');
   api.addFiles(['MapClass.js']);
 });

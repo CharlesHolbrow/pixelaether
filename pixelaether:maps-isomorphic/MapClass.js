@@ -1,4 +1,4 @@
-import { Coord } from 'meteor/coord';
+import { Coord } from 'meteor/pixelaether:coord';
 /*------------------------------------------------------------
 DDS ORM Model for our maps
 

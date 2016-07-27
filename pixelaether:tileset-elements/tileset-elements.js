@@ -1,4 +1,4 @@
-import { TilesetDDS } from  'meteor/game-server-tilesets';
+import { TilesetDDS } from  'meteor/pixelaether:game-server-tileset-dds';
 
 // Static Tilesets
 TilesetDDS.add({

@@ -8,7 +8,7 @@ Package.onUse(function(api) {
   api.use('pixelaether:dds-server', 'server');
   api.use('pixelaether:maps-isomorphic', 'server');
   api.use('pixelaether:urlz', 'server');
-  api.use('game-server-tilesets', 'server');
+  api.use('pixelaether:game-server-tileset-dds', 'server');
   api.use('deps', 'server');
   api.use('underscore', 'server');
   api.use('mongo', 'server');

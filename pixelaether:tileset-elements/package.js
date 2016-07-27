@@ -13,7 +13,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.3.2.4');
   api.addAssets('img/elements9x3.png', ['client', 'server']);
-  api.use(['ecmascript', 'game-server-tilesets'], 'server');
+  api.use(['ecmascript', 'pixelaether:game-server-tileset-dds'], 'server');
   api.mainModule('tileset-elements.js', 'server');
 });
 
