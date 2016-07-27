@@ -14,6 +14,6 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('ecmascript');
   api.use('tinytest');
-  api.use('game-server-players');
+  api.use('pixelaether:game-server-players');
   api.mainModule('game-server-players-tests.js');
 });
