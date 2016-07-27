@@ -2,6 +2,8 @@
 ------------------------------------------------------------*/
 Package.describe({
   summary: 'Manage Connections to Multiple DDP Servers',
+  name: 'pixelaether:rift',
+  version: '0.0.1',
 });
 
 Package.on_use(function(api){

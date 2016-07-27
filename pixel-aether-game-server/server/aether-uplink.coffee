@@ -17,7 +17,7 @@ with our url
 ###
 
 { GameServers } = require 'meteor/pixelaether:game-servers'
-{ Rift }        = require 'meteor/rift'
+{ Rift }        = require 'meteor/pixelaether:rift'
 { DDP }         = require 'meteor/ddp'
 
 serverNamePattern = /^[a-z][a-z0-9\-_ ]{1,62}[a-z0-9](DEV)?$/

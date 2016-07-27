@@ -15,12 +15,13 @@ Package.onUse(function(api) {
   api.imply('pixelaether:game-servers');
   api.imply('pixelaether:dds-server');
   api.imply('pixelaether:time-of-day');
+  api.imply('pixelaether:rift');
+
   api.use('game-server-characters');
   api.use('game-server-maps');
   api.use('game-server-maps');
   api.use('game-server-players');
   api.use('game-server-tilesets');
-  api.use('rift');
 
   api.mainModule('server.js', 'server');
   api.mainModule('client.js', 'client');

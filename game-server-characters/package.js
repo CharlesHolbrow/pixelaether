@@ -17,7 +17,7 @@ Package.onUse(function(api) {
       'random',
       'game-server-maps',
       'pixelaether:game-servers',
-      'rift',
+      'pixelaether:rift',
     ],
     'server'
   );

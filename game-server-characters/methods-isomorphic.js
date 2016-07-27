@@ -1,4 +1,4 @@
-import { AetherRift } from 'meteor/rift';
+import { AetherRift } from 'meteor/pixelaether:rift';
 
 
 AetherRift.methods({
