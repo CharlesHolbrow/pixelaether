@@ -8,7 +8,7 @@ Package.onUse(function(api) {
   api.versionsFrom('1.4');
   api.use('ecmascript');
 
-  // we have to imply the tileset dependency so that the tileset
+  // We have to imply the tileset dependency so that the tileset
   // image will be accessible via url.
   api.imply('pixelaether:tileset-elements', ['server', 'client']);
 
