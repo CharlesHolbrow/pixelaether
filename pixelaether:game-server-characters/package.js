@@ -3,7 +3,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  // the default character tilesetSelector refers uses the
+  // the default character tilesetSelector uses the
   // tileset-characters tileset which is named 'characters'.
   api.imply('tileset-characters');
   api.use('ecmascript');

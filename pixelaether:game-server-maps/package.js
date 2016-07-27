@@ -5,7 +5,16 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.use(['mongo', 'pixelaether:dds-server', 'game-server-tilesets', 'pixelaether:urlz', 'deps', 'underscore', 'maps-isomorphic', 'mongo', 'check', 'ecmascript'], 'server');
+  api.use('pixelaether:dds-server', 'server');
+  api.use('pixelaether:maps-isomorphic', 'server');
+  api.use('pixelaether:urlz', 'server');
+  api.use('game-server-tilesets', 'server');
+  api.use('deps', 'server');
+  api.use('underscore', 'server');
+  api.use('mongo', 'server');
+  api.use('check', 'server');
+  api.use('ecmascript', 'server');
+
   api.export(['MapDDS', 'Maps'], 'server');
   api.addFiles(['MapClass.js', 'MapDDS.js', 'publication.js', 'methods.js'], 'server');
 });

@@ -18,6 +18,8 @@ Package.onUse(function(api) {
   api.imply('pixelaether:rift');
   api.imply('pixelaether:game-server-characters');
   api.imply('pixelaether:game-server-maps');
+  api.imply('pixelaether:maps-isomorphic');
+
   api.use('game-server-players');
   api.use('game-server-tilesets');
 
