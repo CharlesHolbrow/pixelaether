@@ -22,6 +22,7 @@ TilesetDDS.add({
   },
   tileNames: {
     tree: 1,
+    portal: 2,
     grass: 10,
     water: 11,
     ice: 12,
@@ -37,3 +38,4 @@ TilesetDDS.add({
 const elements = TilesetDDS.get('elements');
 elements.set('lava', 'lightRadius', 3);
 elements.set('ice', 'lightRadius', 1);
+elements.set('portal', 'lightRadius', 9);
