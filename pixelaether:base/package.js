@@ -25,9 +25,6 @@ Package.onUse(function(api) {
   api.imply('pixelaether:tilesets-isomorphic');
   api.imply('pixelaether:game-server-tileset-dds');
   api.imply('pixelaether:game-server-players');
-
-  api.mainModule('server.js', 'server');
-  api.mainModule('client.js', 'client');
 });
 
 
