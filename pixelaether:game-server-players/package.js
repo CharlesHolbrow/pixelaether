@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'game-server-players',
+  name: 'pixelaether:game-server-players',
   version: '0.0.1',
   summary: 'Publish certain user fields by default',
 });

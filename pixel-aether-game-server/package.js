@@ -18,8 +18,6 @@ Package.onUse(function(api) {
 
   api.imply([
     'pixelaether:base',
-    'accounts-password',
-    'game-server-players',
     'pixelaether:map-main',
   ], 'server');
 

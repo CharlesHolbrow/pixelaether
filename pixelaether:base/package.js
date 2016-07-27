@@ -10,6 +10,8 @@ Package.onUse(function(api) {
   api.versionsFrom('1.4');
   api.use('ecmascript');
 
+  api.imply('accounts-password', 'server');
+
   api.imply('pixelaether:chunk');
   api.imply('pixelaether:coord');
   api.imply('pixelaether:urlz');
@@ -22,8 +24,7 @@ Package.onUse(function(api) {
   api.imply('pixelaether:maps-isomorphic');
   api.imply('pixelaether:tilesets-isomorphic');
   api.imply('pixelaether:game-server-tileset-dds');
-
-  api.use('game-server-players');
+  api.imply('pixelaether:game-server-players');
 
   api.mainModule('server.js', 'server');
   api.mainModule('client.js', 'client');
