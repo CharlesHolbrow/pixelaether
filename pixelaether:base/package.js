@@ -2,7 +2,7 @@ Package.describe({
   name: 'pixelaether:base',
   version: '0.0.1',
   summary: 'Aggregates pixel-aether exports',
-  git: '',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
   documentation: 'README.md',
 });
 

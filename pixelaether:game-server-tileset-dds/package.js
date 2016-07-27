@@ -1,6 +1,7 @@
 Package.describe({
   summary: 'Metadata for a Tileset hosted on a server',
   name: 'pixelaether:game-server-tileset-dds',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
   version: '0.0.1',
 });
 

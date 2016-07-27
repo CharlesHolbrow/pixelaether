@@ -1,6 +1,7 @@
 Package.describe({
   summary: 'Create and serve PixelAether maps',
   name: 'pixelaether:game-server-maps',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
   version: '0.0.1',
 });
 

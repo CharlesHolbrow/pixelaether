@@ -1,7 +1,8 @@
 Package.describe({
   name: 'pixelaether:time-of-day',
-  version: '0.0.1',
   summary: 'Time of Day for pixelaether maps',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
+  version: '0.0.1',
 });
 
 Package.onUse(function(api) {

@@ -3,6 +3,7 @@
 Package.describe({
   summary: 'Manage Connections to Multiple DDP Servers',
   name: 'pixelaether:rift',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
   version: '0.0.1',
 });
 

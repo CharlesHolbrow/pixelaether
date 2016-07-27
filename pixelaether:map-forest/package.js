@@ -2,7 +2,7 @@ Package.describe({
   name: 'pixelaether:map-forest',
   version: '0.0.1',
   summary: 'A heavily wooded map',
-  git: '',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
   documentation: 'README.md'
 });
 

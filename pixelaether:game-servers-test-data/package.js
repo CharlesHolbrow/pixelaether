@@ -2,6 +2,7 @@ Package.describe({
   name: 'pixelaether:game-servers-test-data',
   version: '0.0.1',
   summary: 'Subsitute Meteor.settings when testing',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
   testOnly: true,
 });
 

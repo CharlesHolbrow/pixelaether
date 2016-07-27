@@ -2,8 +2,8 @@ Package.describe({
   name: 'pixelaether:game-servers',
   version: '0.0.1',
   summary: 'Available on client and server for both game-servers and game-servers-master',
-  git: '',
-  documentation: 'README.md'
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
+  documentation: 'README.md',
 });
 
 Package.onUse(function(api) {

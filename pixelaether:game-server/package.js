@@ -1,6 +1,7 @@
 Package.describe({
   name: 'pixelaether:game-server',
   summary: 'Serve a PixelAether universe',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
   version: '0.0.1',
 });
 

@@ -2,6 +2,7 @@ Package.describe({
   name: 'pixelaether:map-main',
   version: '0.0.1',
   summary: 'A default map',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
 });
 
 Package.onUse(function(api) {

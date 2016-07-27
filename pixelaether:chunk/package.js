@@ -3,6 +3,7 @@ Package.describe({
   version: '0.0.1',
   summary: 'Chunk helper methods',
   documentation: null,
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
 });
 
 Package.onUse(function(api) {

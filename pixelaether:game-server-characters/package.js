@@ -1,5 +1,8 @@
 Package.describe({
+  name: 'pixelaether:game-server-characters',
   summary: 'Serve PixelAether characters',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
+  version: '0.0.1',
 });
 
 Package.onUse(function(api) {

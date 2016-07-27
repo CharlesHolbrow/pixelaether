@@ -1,8 +1,10 @@
 /*------------------------------------------------------------
 ------------------------------------------------------------*/
 Package.describe({
-  summary: 'Manipulate URLs',
   name: 'pixelaether:urlz',
+  summary: 'Manipulate URLs',
+  git: 'https://github.com/CharlesHolbrow/pixelaether/',
+  version: '0.0.1',
 });
 
 Package.onUse(function(api){
