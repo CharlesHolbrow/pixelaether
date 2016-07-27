@@ -1,5 +1,7 @@
 Package.describe({
   summary: 'Create and serve PixelAether maps',
+  name: 'pixelaether:game-server-maps',
+  version: '0.0.1',
 });
 
 Package.onUse(function(api) {

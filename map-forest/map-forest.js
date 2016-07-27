@@ -1,4 +1,4 @@
-import { MapDDS } from 'meteor/game-server-maps';
+import { MapDDS } from 'meteor/pixelaether:game-server-maps';
 
 MapDDS.add({
   name: 'forest',

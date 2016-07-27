@@ -15,7 +15,7 @@ Package.onUse(function(api) {
 
   // We have to use the tileset dependency so that we gaurantee
   // that we call TilesetDDS.add() before calling MapDDS.add()
-  api.use(['tileset-elements', 'game-server-maps'], 'server');
+  api.use(['tileset-elements', 'pixelaether:game-server-maps'], 'server');
 
   // we have to imply the tileset dependency so that the tileset
   // image will be accessible via url.

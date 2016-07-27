@@ -15,7 +15,7 @@ Package.onUse(function(api) {
       'coffeescript',
       'mongo',
       'random',
-      'game-server-maps',
+      'pixelaether:game-server-maps',
       'pixelaether:game-servers',
       'pixelaether:rift',
     ],

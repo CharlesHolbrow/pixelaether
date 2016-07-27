@@ -12,7 +12,7 @@ Package.onUse(function(api) {
   // image will be accessible via url.
   api.imply('tileset-elements', ['server', 'client']);
   api.use('tileset-elements', 'server');
-  api.use('game-server-maps', 'server');
+  api.use('pixelaether:game-server-maps', 'server');
   api.mainModule('map-main.js', 'server');
 });
 

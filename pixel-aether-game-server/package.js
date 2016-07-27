@@ -19,7 +19,6 @@ Package.onUse(function(api) {
   api.imply([
     'pixel-aether',
     'accounts-password',
-    'game-server-maps',
     'game-server-tilesets',
     'game-server-players',
     'rift',
