@@ -20,7 +20,7 @@ Package.onUse(function(api) {
     'pixel-aether',
     'accounts-password',
     'game-server-players',
-    'map-main',
+    'pixelaether:map-main',
   ], 'server');
 
   api.mainModule('./server/launch.coffee', 'server');

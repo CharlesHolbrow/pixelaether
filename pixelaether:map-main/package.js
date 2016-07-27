@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'map-main',
+  name: 'pixelaether:map-main',
   version: '0.0.1',
   summary: 'A default map',
 });
@@ -21,6 +21,6 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('ecmascript');
   api.use('tinytest');
-  api.use('map-main');
+  api.use('pixelaether:map-main');
   api.mainModule('map-main-tests.js');
 });
